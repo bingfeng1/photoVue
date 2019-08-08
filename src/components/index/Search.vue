@@ -1,0 +1,34 @@
+<template>
+  <div id="search">
+    <el-input placeholder="请输入内容" v-model="input" class="input-with-select">
+      <el-button slot="append" icon="el-icon-search"></el-button>
+    </el-input>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      input: ""
+    };
+  }
+};
+</script>
+
+<style lang="scss">
+#search input.el-input__inner {
+  background-color: rgba(255, 0, 0, 0.103);
+  border: none;
+}
+#search .el-input-group__append {
+  border: none;
+}
+
+#search .el-button {
+  background-color: rgba(0, 255, 34, 0.507);
+  line-height: normal;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+</style>
