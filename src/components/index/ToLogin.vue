@@ -1,14 +1,33 @@
 <template>
   <el-button-group>
-    <el-button type="text">
-      <span v-if="isLogin">用户123</span>
-      <router-link v-else to="/login">登录</router-link>
+    <el-button v-if="isLogin">
+      <el-dropdown @command="handleCommand">
+        <span class="el-dropdown-link">
+          用户123
+          <i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item>黄金糕</el-dropdown-item>
+          <el-dropdown-item>狮子头</el-dropdown-item>
+          <el-dropdown-item>螺蛳粉</el-dropdown-item>
+          <el-dropdown-item divided command="unlogin">注销</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+    </el-button>
+    <el-button v-else>
+      <router-link to="/login" tag="a">登录</router-link>/
+      <router-link to="/signUp" tag="a">注册</router-link>
     </el-button>
     <!-- <el-button type="primary">注册</el-button> -->
   </el-button-group>
 </template>
 
 <script>
+const map = new Map();
+map.set("unlogin", function(vm) {
+  window.sessionStorage.removeItem("userInfo");
+  vm.isLogin = false;
+});
 export default {
   data() {
     return {
@@ -22,15 +41,16 @@ export default {
     checkLogin() {
       let userInfo = JSON.parse(window.sessionStorage.getItem("userInfo"));
       return userInfo ? userInfo.sessionId : false;
+    },
+    handleCommand(key) {
+      map.get(key)(this)
     }
   }
 };
 </script>
 
-
 <style lang="scss" scoped>
 .el-button {
-  color: white;
-  text-decoration: underline;
+  padding: 5px 10px;
 }
 </style>

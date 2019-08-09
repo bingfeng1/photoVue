@@ -25,7 +25,12 @@
             <Carousel></Carousel>
           </el-col>
         </el-row>
-        <ImgList :span="8" height="300px"></ImgList>
+        <!-- 整个图片列表放置位置 -->
+        <el-row>
+          <el-col :span="24" class="flexcenter">
+            <ImgList :span="8" height="300px" maxWidth="900px"></ImgList>
+          </el-col>
+        </el-row>
       </el-main>
     </el-container>
   </div>
@@ -49,7 +54,7 @@ export default {
     ToLogin,
     Carousel,
     ImgList
-  },
+  }
 };
 </script>
 
@@ -57,5 +62,9 @@ export default {
 .el-header,
 .el-main {
   padding: 0px;
+}
+.flexcenter{
+  display: flex;
+  justify-content: center;
 }
 </style>
