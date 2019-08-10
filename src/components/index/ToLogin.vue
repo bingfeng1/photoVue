@@ -26,6 +26,10 @@
 const map = new Map();
 map.set("unlogin", function(vm) {
   window.sessionStorage.removeItem("userInfo");
+  vm.$message({
+          message: '注销成功',
+          type: 'success'
+        });
   vm.isLogin = false;
 });
 export default {

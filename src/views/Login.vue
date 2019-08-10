@@ -86,15 +86,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-article {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.el-input {
-  width: 300px;
-}
-</style>

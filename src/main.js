@@ -10,6 +10,9 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
 
+// 使用自定义公共样式
+import '@/assets/css/common.scss'
+
 Vue.config.productionTip = false
 
 // 配置ajax基础路由
