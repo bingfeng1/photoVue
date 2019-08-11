@@ -63,12 +63,23 @@ export default {
             .post("/login", this.form)
             .then(res => {
               const result = res.data;
-              if (result.sessionId) {
-                // 放在session中
-                window.sessionStorage.setItem('userInfo',JSON.stringify(result))
-                this.$router.push('/')
-              }else{
-                this.$message.error("账号或者密码错误")
+              if (result.imageBase64) {
+                let userInfo = {
+                  account : this.form.account,
+                  base64 : result.imageBase64,
+                  type : result.imgtype
+                }
+                window.sessionStorage.setItem(
+                  "userInfo",
+                  JSON.stringify(userInfo)
+                );
+                this.$message({
+                  message: "登陆成功",
+                  type: "success"
+                });
+                this.$router.push("/");
+              } else {
+                this.$message.error("账号或者密码错误");
               }
             })
             .catch(err => {

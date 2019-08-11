@@ -3,7 +3,8 @@
     <el-button v-if="isLogin">
       <el-dropdown @command="handleCommand">
         <span class="el-dropdown-link">
-          用户123
+          {{userInfo.account}}
+          <el-avatar :size="50" :src="userInfo.base64"></el-avatar>
           <i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
@@ -27,15 +28,16 @@ const map = new Map();
 map.set("unlogin", function(vm) {
   window.sessionStorage.removeItem("userInfo");
   vm.$message({
-          message: '注销成功',
-          type: 'success'
-        });
+    message: "注销成功",
+    type: "success"
+  });
   vm.isLogin = false;
 });
 export default {
   data() {
     return {
-      isLogin: false
+      isLogin: false,
+      userInfo: {}
     };
   },
   mounted() {
@@ -44,10 +46,16 @@ export default {
   methods: {
     checkLogin() {
       let userInfo = JSON.parse(window.sessionStorage.getItem("userInfo"));
-      return userInfo ? userInfo.sessionId : false;
+      // 如果有用户信息
+      if (userInfo) {
+        let {account,base64,type} = userInfo;
+        this.$set(this.userInfo,'account',account)
+        this.$set(this.userInfo,'base64',"data:" + type + ";base64," + base64)
+      }
+      return !!userInfo;
     },
     handleCommand(key) {
-      map.get(key)(this)
+      map.get(key)(this);
     }
   }
 };

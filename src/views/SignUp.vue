@@ -40,7 +40,7 @@
         <el-form-item label="头像设置">
           <el-upload
             class="avatar-uploader"
-            action="http://localhost:3000/headImg"
+            :action="$http.defaults.baseURL+'/headImg'"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
           >
@@ -92,7 +92,8 @@ export default {
         hobbies: [],
         birthday: "",
         imageUrl: "",
-        imageBase64: ""
+        imageBase64: [],
+        imageType:""
       },
       rules: {
         pass: [{ validator: validatePass, trigger: "blur" }],
@@ -108,16 +109,16 @@ export default {
             .post("/signup", this.form)
             .then(res => {
               const result = res.data;
-              // if (result.sessionId) {
-              //   // 放在session中
-              //   window.sessionStorage.setItem(
-              //     "userInfo",
-              //     JSON.stringify(result)
-              //   );
-              //   // this.$router.push("/");
-              // } else {
-              //   // this.$message.error("账号或者密码错误");
-              // }
+              if (result.message) {
+                this.$message.error("注册失败"+result.message);
+              } else {
+                // 如果注册成功，跳转至登录页面进行登录
+                this.$message({
+                  message: "注册成功，请登录",
+                  type: "success"
+                });
+                this.$router.replace('/login')
+              }
             });
         } else {
           // console.log('error submit!!');
@@ -131,7 +132,8 @@ export default {
 
     handleAvatarSuccess(res, file) {
       this.form.imageUrl = URL.createObjectURL(file.raw);
-      this.form.imageBase64 = res;
+      this.form.imgtype = file.raw.type;
+      this.form.imageBase64 = res.buffer;
     }
     // beforeAvatarUpload(file) {
     //   const isJPG = file.type === "image/jpeg";
@@ -150,10 +152,6 @@ export default {
 </script>
 
 <style lang="scss">
-.el-input {
-  width: 300px;
-}
-
 .avatar-uploader .el-upload {
   border: 1px dashed #3a3a3a;
   border-radius: 6px;
