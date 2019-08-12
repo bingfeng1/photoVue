@@ -13,7 +13,11 @@
           <Search></Search>
           <!-- 登录按钮 -->
           <template #login>
-            <ToLogin></ToLogin>
+            <ToLogin>
+              <template #default="{userInfo}">
+                <User :userInfo="userInfo"></User>
+              </template>
+            </ToLogin>
           </template>
         </MyHeader>
       </el-header>
@@ -44,6 +48,7 @@ import Search from "@/components/index/Search.vue";
 import ToLogin from "@/components/index/ToLogin.vue";
 import Carousel from "@/components/index/Carousel.vue";
 import ImgList from "@/components/index/ImgList.vue";
+import User from "@/components/index/User.vue";
 
 export default {
   name: "index",
@@ -53,7 +58,8 @@ export default {
     Search,
     ToLogin,
     Carousel,
-    ImgList
+    ImgList,
+    User
   }
 };
 </script>
@@ -63,7 +69,7 @@ export default {
 .el-main {
   padding: 0px;
 }
-.flexcenter{
+.flexcenter {
   display: flex;
   justify-content: center;
 }
