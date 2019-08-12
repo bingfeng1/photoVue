@@ -13,6 +13,10 @@ Vue.use(ElementUI);
 // 使用自定义公共样式
 import '@/assets/css/common.scss'
 
+// 头像图片裁剪功能
+import SlimCropper from 'vue-slim-cropper'
+Vue.use(SlimCropper)
+
 Vue.config.productionTip = false
 
 // 配置ajax基础路由

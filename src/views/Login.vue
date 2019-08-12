@@ -67,7 +67,8 @@ export default {
                 let userInfo = {
                   account : this.form.account,
                   base64 : result.imageBase64,
-                  type : result.imgtype
+                  type : result.imageType,
+                  nickname : result.nickname
                 }
                 window.sessionStorage.setItem(
                   "userInfo",

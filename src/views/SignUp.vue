@@ -40,11 +40,11 @@
         <el-form-item label="头像设置">
           <el-upload
             class="avatar-uploader"
-            :action="$http.defaults.baseURL+'/headImg'"
+            action
             :show-file-list="false"
-            :on-success="handleAvatarSuccess"
+            :on-change="handleCrop"
+            :auto-upload="false"
           >
-            <!-- :before-upload="beforeAvatarUpload" -->
             <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
@@ -55,6 +55,16 @@
           <el-button @click="resetForm('form')">重置</el-button>
         </el-form-item>
       </el-form>
+      <!-- 裁剪页 -->
+      <transition name="slim-fade">
+        <div v-show="cropShow" class="crop-wrap">
+          <SlimCropper ref="cropper" :src="inputImgUrl"></SlimCropper>
+          <div class="btn-box">
+            <button @click="hideCrop">取消</button>
+            <button @click="submitCrop">使用</button>
+          </div>
+        </div>
+      </transition>
     </el-card>
   </article>
 </template>
@@ -87,37 +97,53 @@ export default {
       form: {
         pass: "",
         account: "",
-        nickname:"",
+        nickname: "",
         sex: -1,
         hobbies: [],
         birthday: "",
         imageUrl: "",
         imageBase64: [],
-        imageType:""
+        imageType: ""
       },
       rules: {
         pass: [{ validator: validatePass, trigger: "blur" }],
         account: [{ validator: checkAccount, trigger: "blur" }]
-      }
+      },
+      // 头像剪裁属性
+      cropShow: false,
+      inputImgUrl: ""
     };
   },
   methods: {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+          let formData = new FormData();
+          formData.append("pass", this.form.pass);
+          formData.append("account", this.form.account);
+          formData.append("nickname", this.form.nickname);
+          formData.append("sex", this.form.sex);
+          formData.append("hobbies", this.form.pahobbiesss);
+          formData.append("birthday", this.form.birthday);
+          formData.append("imageBase64", this.form.imageBase64);
+          formData.append("imageType", this.form.imageType);
           this.$http
-            .post("/signup", this.form)
+            .post("/signup", formData, {
+              headers: {
+                "Content-Type": "multipart/form-data"
+              }
+            })
             .then(res => {
               const result = res.data;
               if (result.message) {
-                this.$message.error("注册失败"+result.message);
+                this.$message.error("注册失败" + result.message);
               } else {
                 // 如果注册成功，跳转至登录页面进行登录
                 this.$message({
                   message: "注册成功，请登录",
                   type: "success"
                 });
-                this.$router.replace('/login')
+                this.$router.replace("/login");
               }
             });
         } else {
@@ -129,24 +155,38 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
+    handleCrop(file) {
+      this.inputImgUrl = URL.createObjectURL(file.raw);
+      this.showCrop();
+    },
+    // 显示裁剪页
+    showCrop() {
+      this.cropShow = true;
+    },
+    // 隐藏裁剪页
+    hideCrop() {
+      this.cropShow = false;
+    },
+    // 裁剪页确认
+    async submitCrop() {
+      const img = await this.$refs.cropper.getCroppedBlob();
 
-    handleAvatarSuccess(res, file) {
-      this.form.imageUrl = URL.createObjectURL(file.raw);
-      this.form.imgtype = file.raw.type;
-      this.form.imageBase64 = res.buffer;
+      const isJPG = img.type === "image/jpeg";
+      const isLt2M = img.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error("上传头像图片只能是 JPG 格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传头像图片大小不能超过 2MB!");
+      }
+      if (isJPG && isLt2M) {
+        this.form.imageType = img.type;
+        this.form.imageBase64 = img;
+        this.form.imageUrl = URL.createObjectURL(img);
+        this.hideCrop();
+      }
     }
-    // beforeAvatarUpload(file) {
-    //   const isJPG = file.type === "image/jpeg";
-    //   const isLt2M = file.size / 1024 / 1024 < 2;
-
-    //   if (!isJPG) {
-    //     this.$message.error("上传头像图片只能是 JPG 格式!");
-    //   }
-    //   if (!isLt2M) {
-    //     this.$message.error("上传头像图片大小不能超过 2MB!");
-    //   }
-    //   return isJPG && isLt2M;
-    // }
   }
 };
 </script>
@@ -174,5 +214,44 @@ export default {
   width: 100px;
   height: 100px;
   display: block;
+}
+
+.crop-wrap {
+  z-index: 1;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  background: #000;
+  .btn-box {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    button {
+      width: 60px;
+      height: 100%;
+      font-size: 16px;
+      color: #ffffff;
+      text-align: center;
+      background: #ffffff52;
+      border: none;
+    }
+  }
+}
+.slim-fade-enter-active,
+.slim-fade-leave-active {
+  transition: all 0.4s ease;
+}
+.slim-fade-enter,
+.slim-fade-leave-to {
+  opacity: 0;
+  transform-origin: top;
+  transform: translateY(100%);
 }
 </style>
