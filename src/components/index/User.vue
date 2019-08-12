@@ -20,11 +20,11 @@ const map = new Map();
 map
   .set("unlogin", function(vm) {
     window.sessionStorage.removeItem("userInfo");
+    vm.$store.dispatch("clearUserInfo")
     vm.$message({
       message: "注销成功",
       type: "success"
     });
-    vm.isLogin = false;
   })
   .set("upload", function(vm) {
     vm.$router.push("/upload");

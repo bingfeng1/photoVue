@@ -74,6 +74,7 @@ export default {
                   "userInfo",
                   JSON.stringify(userInfo)
                 );
+                this.$store.dispatch("setUserInfo",userInfo)
                 this.$message({
                   message: "登陆成功",
                   type: "success"

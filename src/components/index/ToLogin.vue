@@ -15,12 +15,13 @@
 export default {
   data() {
     return {
-      isLogin: false,
       userInfo: {}
     };
   },
-  mounted() {
-    this.isLogin = this.checkLogin();
+  computed: {
+    isLogin(){
+      return this.checkLogin()
+    }
   },
   methods: {
     checkLogin() {
@@ -36,7 +37,7 @@ export default {
           "data:" + type + ";base64," + base64
         );
       }
-      return !!userInfo;
+      return !!this.$store.state.userInfo.nickname;
     }
   }
 };
