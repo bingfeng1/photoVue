@@ -1,5 +1,5 @@
 <template>
-  <el-dropdown @command="handleCommand" trigger="click">
+  <el-dropdown @command="handleCommand">
     <span class="el-dropdown-link">
       {{userInfo.nickname}}
       <i class="el-icon-arrow-down el-icon--right"></i>

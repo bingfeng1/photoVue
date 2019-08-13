@@ -16,7 +16,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 #search input.el-input__inner {
   background-color: rgba(255, 0, 0, 0.103);
   border: none;
