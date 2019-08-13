@@ -12,10 +12,8 @@
       ref="tree"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span>
-          {{ node.label }}
-        </span>
-        <span v-show="data.id == 1">
+        <span>{{ node.label }}</span>
+        <span v-if="data.id == 0">
           <el-input
             size="mini"
             placeholder="请输入内容"
@@ -74,22 +72,27 @@ export default {
     add() {
       if (this.addInput) {
         let data = this.data[0];
-        if (!data.children) {
-          this.$set(data, "children", []);
-        }
         let maxId = 0;
         for (let i of this.data[0].children) {
           maxId = maxId < i.id ? i.id : maxId;
         }
-        const newChild = { id: maxId, label: this.addInput };
-        data.children.push(newChild);
-        //   这里还需要判断，是否已存在这个标签，目前暂无此功能
-        this.isadd = false;
-        this.addInput = "";
-        this.$message({
-          showClose: true,
-          message: "添加目录成功",
-          type: "success"
+
+        // 入库操作
+        let params = {
+          account: this.$store.state.userInfo.account,
+          typename: this.addInput,
+          orderId: ++maxId
+        };
+        this.$http.post("/user/addImgType", params).then(res => {
+          this.makeTreeList(res);
+          //   这里还需要判断，是否已存在这个标签，目前暂无此功能
+          this.isadd = false;
+          this.addInput = "";
+          this.$message({
+            showClose: true,
+            message: "添加目录成功",
+            type: "success"
+          });
         });
       } else {
         this.$message({
@@ -107,21 +110,42 @@ export default {
         if (id == -1) {
           break;
         }
-        const index = this.data[0].children.findIndex(d => d.id === id);
-        this.data[0].children.splice(index, 1);
+        this.$http
+          .delete("/user/deleteImgType", {
+            params: {
+              orderId: id
+            },
+            data: {
+              account: this.$store.state.userInfo.account
+            }
+          })
+          .then(res => {
+            this.makeTreeList(res);
+          });
+      }
+    },
+
+    makeTreeList(res) {
+      let result = res.data;
+      this.data[0].children.length = 0;
+      for (let v of result) {
+        const newChild = { id: v.orderId, label: v.typename };
+        this.data[0].children.push(newChild);
       }
     }
   },
 
   data() {
     return {
-      filterText: "",
-      addInput: "",
-      isadd: false,
+      filterText: "", // 树形过滤
+      addInput: "", // 增加树形数据
+      isadd: false, //切换是否显示输入框
+      // 树形结构的内容
       data: [
         {
-          id: 1,
-          label: "全部"
+          id: 0,
+          label: "全部",
+          children: []
         }
       ],
       defaultProps: {
@@ -129,6 +153,19 @@ export default {
         label: "label"
       }
     };
+  },
+
+  // 进入时，根据存放的account获取用户信息
+  mounted() {
+    this.$http
+      .get("/user/imgType", {
+        params: {
+          account: this.$store.state.userInfo.account
+        }
+      })
+      .then(res => {
+        this.makeTreeList(res);
+      });
   }
 };
 </script>
@@ -141,8 +178,8 @@ article {
   .el-input {
     width: 100%;
   }
-  .el-tree{
-      margin-top: 20px;
+  .el-tree {
+    margin-top: 20px;
   }
   .custom-tree-node {
     flex: 1;
