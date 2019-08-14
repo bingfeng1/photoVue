@@ -5,9 +5,7 @@
     </el-aside>
     <el-container>
       <el-main>
-        <Statistics>
-          <!-- 将treeList传入照片选择区域 -->
-          <UploadChoose :treeList="treeList"></UploadChoose>
+        <Statistics :treeList="treeList">
         </Statistics>
         <div>图片墙</div>
       </el-main>
@@ -19,13 +17,11 @@
 <script>
 import Tree from "@/components/upload/Tree.vue";
 import Statistics from "@/components/upload/Statistics.vue";
-import UploadChoose from "@/components/upload/UploadChoose.vue";
 
 export default {
   components: {
     Tree,
-    Statistics,
-    UploadChoose
+    Statistics
   },
 
   data() {
