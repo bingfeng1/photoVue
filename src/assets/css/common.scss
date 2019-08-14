@@ -6,9 +6,15 @@ article {
 }
 
 .el-input {
-  width: 300px;
+  width: 100%;
+  min-width: 200px;
 }
 
 .el-date-editor.el-input{
   width: 100%;
+}
+body{
+  margin: 0px;
+  padding: 0px;
+  min-width: 500px;
 }

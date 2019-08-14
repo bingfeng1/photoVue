@@ -1,6 +1,6 @@
 <template>
   <div id="search">
-    <el-input placeholder="请输入内容" v-model="input" class="input-with-select">
+    <el-input placeholder="请输入内容" v-model="input" class="input-with-select" ref="input">
       <el-button slot="append" icon="el-icon-search"></el-button>
     </el-input>
   </div>
@@ -12,16 +12,17 @@ export default {
     return {
       input: ""
     };
-  }
+  },
+  mounted() {
+    // 使用css不成功，搜索和边框之间总有一条缝隙
+    this.$refs.input.$el.lastElementChild.style.borderColor = "rgba(0, 255, 34, 0.507)";
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 #search input.el-input__inner {
   background-color: rgba(255, 0, 0, 0.103);
-  border: none;
-}
-#search .el-input-group__append {
   border: none;
 }
 

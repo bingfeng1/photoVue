@@ -27,7 +27,7 @@ export default {
     };
   },
   mounted() {
-    this.getImgList();
+    // this.getImgList();
     this.$Lazyload.$on("loaded", function({ el, naturalHeight, error }) {
       if (naturalHeight == 1) {
         el.src = error;
