@@ -1,5 +1,5 @@
 <template>
-  <article id="tree">
+  <section id="tree">
     <el-input placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
     <el-tree
       class="filter-tree"
@@ -57,7 +57,7 @@
         </span>
       </span>
     </el-tree>
-  </article>
+  </section>
 </template>
 
 <script>
@@ -118,16 +118,13 @@ export default {
       let childNodes = this.$refs.tree.getCheckedNodes();
       let ids = [];
       for (let i in childNodes) {
-        let id = childNodes[i].id;
-        if (id == 0) {
-          continue;
-        }
+        let id = childNodes[i].z_id;
         ids.push(id);
       }
       this.$http
         .delete("/user/deleteImgType", {
           params: {
-            orderId: ids
+            id: ids
           },
           data: {
             account: this.$store.state.userInfo.account
@@ -161,13 +158,14 @@ export default {
                 },
                 {
                   params: {
-                    orderId: newChild.id,
+                    id: newChild.z_id,
                     typename: this.innerText
                   }
                 }
               )
               .then(res => {
                 // 这里需要写入成功或者失败
+                that.makeTreeList(res);
               });
           }
         });
@@ -179,10 +177,12 @@ export default {
       let result = res.data;
       this.data[0].children = [];
       for (let v of result) {
-        const newChild = { id: v.orderId, label: v.typename };
+        const newChild = { id: v.orderId, label: v.typename ,z_id:v.id};
         this.data[0].children.push(newChild);
         this.axiosEdit(newChild);
       }
+      // 把结果抛出来，其他地方使用
+      this.$emit("setTreeList", result);
     }
   },
 
@@ -206,8 +206,8 @@ export default {
     };
   },
 
-  // 进入时，根据存放的account获取用户信息
   mounted() {
+    // 进入时，根据存放的account获取用户信息
     this.$http
       .get("/user/imgType", {
         params: {
@@ -218,7 +218,7 @@ export default {
         this.makeTreeList(res);
       });
     // 树形的input框如果取消焦点，默认缩回去
-    this.$refs.addInput.$el.firstElementChild.addEventListener("blur", () => {
+    this.$refs.tree.$el.addEventListener("mouseleave", () => {
       this.isadd = false;
     });
   }
@@ -226,8 +226,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-article {
-  display: block;
+section {
   height: 90vh;
   padding: 5vh 10px;
   .el-input {
