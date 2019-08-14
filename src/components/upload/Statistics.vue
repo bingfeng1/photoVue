@@ -7,7 +7,7 @@
     <!-- 第三个为上传按钮 -->
     <el-button @click="showUpload = true">上传</el-button>
 
-    <el-dialog title="收货地址" :visible.sync="showUpload">
+    <el-dialog title="上传图片" :visible.sync="showUpload" width="80%">
       <slot></slot>
     </el-dialog>
   </section>
