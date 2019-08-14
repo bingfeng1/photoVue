@@ -1,5 +1,5 @@
 <template>
-  <article>
+  <article id="tree">
     <el-input placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
     <el-tree
       class="filter-tree"
@@ -11,9 +11,13 @@
       :expand-on-click-node="false"
       ref="tree"
     >
+      <!-- 自定义tree内部样式 -->
       <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span>{{ node.label }}</span>
+        <!-- 这里是span具体内容，左边那一列 -->
+        <span :ref="data.label">{{ node.label }}</span>
+        <!-- 如果是第一条（全部） -->
         <span v-if="data.id == 0">
+          <!-- 添加一级的输入框，默认隐藏 -->
           <el-input
             size="mini"
             placeholder="请输入内容"
@@ -21,6 +25,7 @@
             v-show="isadd"
             v-model="addInput"
           ></el-input>
+          <!-- 输入框的确认按钮 -->
           <el-button
             class="success"
             v-show="isadd"
@@ -29,6 +34,7 @@
             icon="el-icon-circle-check"
             @click="() => add()"
           ></el-button>
+          <!-- 用来显示输入框 -->
           <el-button
             v-show="!isadd"
             type="text"
@@ -36,6 +42,7 @@
             icon="el-icon-circle-plus-outline"
             @click="() => showInput()"
           ></el-button>
+          <!-- 用于删除使用 -->
           <el-button
             v-show="!isadd"
             type="text"
@@ -44,6 +51,10 @@
             @click="() => cut()"
           ></el-button>
         </span>
+        <!-- 每一个子列使用修改按钮 -->
+        <span v-else>
+          <el-button type="text" size="mini" icon="el-icon-edit" @click="() => edit(node,data)"></el-button>
+        </span>
       </span>
     </el-tree>
   </article>
@@ -51,6 +62,7 @@
 
 <script>
 export default {
+  // 过滤筛选
   watch: {
     filterText(val) {
       this.$refs.tree.filter(val);
@@ -71,7 +83,6 @@ export default {
     },
     add() {
       if (this.addInput) {
-        let data = this.data[0];
         let maxId = 0;
         for (let i of this.data[0].children) {
           maxId = maxId < i.id ? i.id : maxId;
@@ -105,32 +116,72 @@ export default {
 
     cut() {
       let childNodes = this.$refs.tree.getCheckedNodes();
+      let ids = [];
       for (let i in childNodes) {
         let id = childNodes[i].id;
-        if (id == -1) {
-          break;
+        if (id == 0) {
+          continue;
         }
-        this.$http
-          .delete("/user/deleteImgType", {
-            params: {
-              orderId: id
-            },
-            data: {
-              account: this.$store.state.userInfo.account
-            }
-          })
-          .then(res => {
-            this.makeTreeList(res);
-          });
+        ids.push(id);
       }
+      this.$http
+        .delete("/user/deleteImgType", {
+          params: {
+            orderId: ids
+          },
+          data: {
+            account: this.$store.state.userInfo.account
+          }
+        })
+        .then(res => {
+          this.makeTreeList(res);
+        });
     },
 
+    edit(node, data) {
+      let dom = this.$refs[data.label];
+      dom.setAttribute("contenteditable", true);
+      dom.focus();
+    },
+
+    axiosEdit(newChild) {
+      let that = this;
+      // 绑定修改事件
+      this.$nextTick(() => {
+        let dom = this.$refs[newChild.label];
+        dom.addEventListener("blur", function() {
+          this.setAttribute("contenteditable", false);
+          if (this.innerText != newChild.label) {
+            // 这里操作修改部分
+            that.$http
+              .put(
+                "/user/updateImgType",
+                {
+                  account: that.$store.state.userInfo.account
+                },
+                {
+                  params: {
+                    orderId: newChild.id,
+                    typename: this.innerText
+                  }
+                }
+              )
+              .then(res => {
+                // 这里需要写入成功或者失败
+              });
+          }
+        });
+      });
+    },
+
+    // 通过返回的值，重新画tree
     makeTreeList(res) {
       let result = res.data;
-      this.data[0].children.length = 0;
+      this.data[0].children = [];
       for (let v of result) {
         const newChild = { id: v.orderId, label: v.typename };
         this.data[0].children.push(newChild);
+        this.axiosEdit(newChild);
       }
     }
   },
@@ -166,6 +217,10 @@ export default {
       .then(res => {
         this.makeTreeList(res);
       });
+    // 树形的input框如果取消焦点，默认缩回去
+    this.$refs.addInput.$el.firstElementChild.addEventListener("blur", () => {
+      this.isadd = false;
+    });
   }
 };
 </script>
@@ -190,6 +245,7 @@ article {
     padding: 0 8px;
     .el-input {
       width: 150px;
+      min-width: 150px;
       margin-right: 10px;
     }
     .success {
