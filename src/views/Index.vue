@@ -60,7 +60,9 @@ export default {
     Carousel,
     ImgList,
     User
-  }
+  },
+  mounted() {
+  },
 };
 </script>
 

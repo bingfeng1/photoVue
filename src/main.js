@@ -34,5 +34,12 @@ Vue.use(VueLazyload, {
 new Vue({
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
+  mounted() {
+    // 设置一个带有token的axios
+    let $http_token = axios.create()
+    let userInfo = JSON.parse(window.sessionStorage.getItem("userInfo")) || {};
+    $http_token.defaults.headers.common['Authorization'] = userInfo.token;
+    Vue.prototype.$http_token = $http_token
+  },
 }).$mount('#app')

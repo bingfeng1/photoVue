@@ -25,11 +25,14 @@
         <el-row>
           <el-col :span="24">
             <el-upload
-              action="http://localhost:3000/user/upload"
+              action
               list-type="picture-card"
               :on-preview="handlePictureCardPreview"
               :auto-upload="false"
               multiple
+              :on-remove="getFileList"
+              :on-change="getFileList"
+              :limit="9"
               ref="imgList"
             >
               <i class="el-icon-plus"></i>
@@ -56,7 +59,8 @@ export default {
       showUpload: false,
       value: "",
       dialogImageUrl: "",
-      dialogVisible: false
+      dialogVisible: false,
+      fileList: []
     };
   },
   props: {
@@ -65,6 +69,11 @@ export default {
   computed: {
     type() {
       return this.treeList;
+    },
+    files() {
+      return this.fileList.map(file => {
+        return file.raw;
+      });
     }
   },
   methods: {
@@ -86,8 +95,45 @@ export default {
       this.dialogImageUrl = file.url;
       this.dialogVisible = true;
     },
+    getFileList(file, fileList) {
+      this.fileList = fileList;
+    },
     toUpload() {
-      this.$refs.imgList.submit();
+      let formdata = new FormData();
+      for (let v of this.files) {
+        formdata.append("file", v);
+      }
+      this.$http
+        .post("/user/upload", formdata, {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+        })
+        .then(res => {
+          let result = res.data;
+          if (result == "success") {
+            for (let v of this.fileList) {
+              v.status = "success";
+            }
+          }
+          setTimeout(() => {
+            this.$refs.imgList.clearFiles();
+            this.$confirm("需要继续上传吗", "提示", {
+              confirmButtonText: "确定",
+              cancelButtonText: "取消",
+              type: "success"
+            })
+              .then(() => {
+                this.$message({
+                  type: "success",
+                  message: "请继续选择需要上传的文件"
+                });
+              })
+              .catch(() => {
+                this.showUpload = false;
+              });
+          }, 1000);
+        });
     }
   },
   mounted() {

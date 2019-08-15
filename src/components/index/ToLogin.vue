@@ -28,8 +28,7 @@ export default {
       let userInfo = JSON.parse(window.sessionStorage.getItem("userInfo"));
       // 如果有用户信息
       if (userInfo) {
-        let { account, nickname, base64, type } = userInfo;
-        this.$set(this.userInfo, "account", account);
+        let { nickname, base64, type } = userInfo;
         this.$set(this.userInfo, "nickname", nickname);
         this.$set(
           this.userInfo,
@@ -37,7 +36,7 @@ export default {
           "data:" + type + ";base64," + base64
         );
       }
-      return !!this.$store.state.userInfo.nickname;
+      return !!this.$store.state.userInfo.token;
     }
   }
 };

@@ -108,11 +108,10 @@ export default {
 
         // 入库操作
         let params = {
-          account: this.$store.state.userInfo.account,
           typename: this.addInput,
           orderId: ++maxId
         };
-        this.$http.post("/user/addImgType", params).then(res => {
+        this.$http_token.post("/user/addImgType", params).then(res => {
           this.makeTreeList(res);
           //   这里还需要判断，是否已存在这个标签，目前暂无此功能
           this.isadd = false;
@@ -132,15 +131,12 @@ export default {
       }
     },
 
-    cut(node,data) {
+    cut(node, data) {
       let id = data.z_id;
-      this.$http
+      this.$http_token
         .delete("/user/deleteImgType", {
           params: {
             id
-          },
-          data: {
-            account: this.$store.state.userInfo.account
           }
         })
         .then(res => {
@@ -163,19 +159,11 @@ export default {
           this.setAttribute("contenteditable", false);
           if (this.innerText != newChild.label) {
             // 这里操作修改部分
-            that.$http
-              .put(
-                "/user/updateImgType",
-                {
-                  account: that.$store.state.userInfo.account
-                },
-                {
-                  params: {
-                    id: newChild.z_id,
-                    typename: this.innerText
-                  }
-                }
-              )
+            that.$http_token
+              .put("/user/updateImgType", {
+                id: newChild.z_id,
+                typename: this.innerText
+              })
               .then(res => {
                 // 这里需要写入成功或者失败
                 that.makeTreeList(res);
@@ -221,16 +209,10 @@ export default {
   },
 
   mounted() {
-    // 进入时，根据存放的account获取用户信息
-    this.$http
-      .get("/user/imgType", {
-        params: {
-          account: this.$store.state.userInfo.account
-        }
-      })
-      .then(res => {
-        this.makeTreeList(res);
-      });
+    // 进入时，根据存放的token获取用户信息
+    this.$http_token.get("/user/imgType").then(res => {
+      this.makeTreeList(res);
+    });
     // 树形的input框如果取消焦点，默认缩回去
     this.$refs.tree.$el.addEventListener("mouseleave", () => {
       this.isadd = false;

@@ -65,16 +65,17 @@ export default {
               const result = res.data;
               if (result.imageBase64) {
                 let userInfo = {
-                  account : this.form.account,
-                  base64 : result.imageBase64,
-                  type : result.imageType,
-                  nickname : result.nickname
-                }
+                  token: result.token,
+                  base64: result.imageBase64,
+                  type: result.imageType,
+                  nickname: result.nickname
+                };
                 window.sessionStorage.setItem(
                   "userInfo",
                   JSON.stringify(userInfo)
                 );
-                this.$store.dispatch("setUserInfo",userInfo)
+                this.$store.dispatch("setUserInfo", userInfo);
+                this.$http_token.defaults.headers.common["Authorization"] = result.token;
                 this.$message({
                   message: "登陆成功",
                   type: "success"
