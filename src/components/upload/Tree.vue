@@ -4,7 +4,6 @@
     <el-tree
       class="filter-tree"
       :data="data"
-      show-checkbox
       :props="defaultProps"
       default-expand-all
       :filter-node-method="filterNode"
@@ -16,6 +15,15 @@
         <!-- 这里是span具体内容，左边那一列 -->
         <span :ref="data.label">{{ node.label }}</span>
         <!-- 如果是第一条（全部） -->
+        <span v-show="data.id == 0">
+          <!-- 用于删除使用 -->
+          <el-button
+            v-show="!isadd"
+            type="text"
+            size="mini"
+            @click="() => showcut()"
+          >{{iscut|cutWord}}</el-button>
+        </span>
         <span v-if="data.id == 0">
           <!-- 添加一级的输入框，默认隐藏 -->
           <el-input
@@ -42,17 +50,17 @@
             icon="el-icon-circle-plus-outline"
             @click="() => showInput()"
           ></el-button>
-          <!-- 用于删除使用 -->
-          <el-button
-            v-show="!isadd"
-            type="text"
-            size="mini"
-            icon="el-icon-remove-outline"
-            @click="() => cut()"
-          ></el-button>
         </span>
         <!-- 每一个子列使用修改按钮 -->
         <span v-else>
+          <el-button
+            class="error"
+            v-show="iscut"
+            type="text"
+            size="mini"
+            icon="el-icon-remove-outline"
+            @click="() => cut(node,data)"
+          ></el-button>
           <el-button type="text" size="mini" icon="el-icon-edit" @click="() => edit(node,data)"></el-button>
         </span>
       </span>
@@ -69,6 +77,12 @@ export default {
     }
   },
 
+  filters: {
+    cutWord(value) {
+      return value ? "取消" : "删除";
+    }
+  },
+
   methods: {
     filterNode(value, data) {
       if (!value) return true;
@@ -81,6 +95,10 @@ export default {
         this.$refs.addInput.focus();
       });
     },
+    showcut() {
+      this.iscut = !this.iscut;
+    },
+
     add() {
       if (this.addInput) {
         let maxId = 0;
@@ -114,17 +132,12 @@ export default {
       }
     },
 
-    cut() {
-      let childNodes = this.$refs.tree.getCheckedNodes();
-      let ids = [];
-      for (let i in childNodes) {
-        let id = childNodes[i].z_id;
-        ids.push(id);
-      }
+    cut(node,data) {
+      let id = data.z_id;
       this.$http
         .delete("/user/deleteImgType", {
           params: {
-            id: ids
+            id
           },
           data: {
             account: this.$store.state.userInfo.account
@@ -177,7 +190,7 @@ export default {
       let result = res.data;
       this.data[0].children = [];
       for (let v of result) {
-        const newChild = { id: v.orderId, label: v.typename ,z_id:v.id};
+        const newChild = { id: v.orderId, label: v.typename, z_id: v.id };
         this.data[0].children.push(newChild);
         this.axiosEdit(newChild);
       }
@@ -191,6 +204,7 @@ export default {
       filterText: "", // 树形过滤
       addInput: "", // 增加树形数据
       isadd: false, //切换是否显示输入框
+      iscut: false, //展示删除框
       // 树形结构的内容
       data: [
         {
@@ -249,6 +263,9 @@ section {
     }
     .success {
       color: #67c23a;
+    }
+    .error {
+      color: #f56c6c;
     }
   }
 }
