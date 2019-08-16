@@ -21,7 +21,7 @@ map
   .set("unlogin", function(vm) {
     window.sessionStorage.removeItem("userInfo");
     vm.$store.dispatch("clearUserInfo")
-    this.$http_token.defaults.headers.common["Authorization"] = ""
+    vm.$http_token.defaults.headers.common["Authorization"] = ""
     vm.$message({
       message: "注销成功",
       type: "success"

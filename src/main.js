@@ -19,6 +19,9 @@ Vue.use(SlimCropper)
 
 Vue.config.productionTip = false
 
+// 设置开头的
+import { setUserInfo } from '@/assets/js/common'
+
 // 配置ajax基础路由
 axios.defaults.baseURL = 'http://localhost:3000';
 Vue.prototype.$http = axios;
@@ -38,8 +41,7 @@ new Vue({
   mounted() {
     // 设置一个带有token的axios
     let $http_token = axios.create()
-    let userInfo = JSON.parse(window.sessionStorage.getItem("userInfo")) || {};
-    $http_token.defaults.headers.common['Authorization'] = userInfo.token;
+    setUserInfo($http_token)
     Vue.prototype.$http_token = $http_token
   },
 }).$mount('#app')

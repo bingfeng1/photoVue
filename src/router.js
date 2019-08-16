@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Index from '@/views/Index.vue'
+import {getUserInfo} from '@/assets/js/common'
 
 Vue.use(Router)
 const router = new Router({
@@ -42,7 +43,8 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   if (to.meta.auth) { //权限判断
-    if (localStorage.getItem('token')) { //读取token值
+    let userInfo = getUserInfo();
+    if (userInfo.token) { //读取token值
       //  成功
       next()
     } else {

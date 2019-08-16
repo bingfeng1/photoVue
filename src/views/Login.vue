@@ -23,6 +23,8 @@
 </template>
 
 <script>
+// 设置开头的
+import { setUserInfo } from '@/assets/js/common'
 export default {
   data() {
     // 验证条件判断
@@ -75,7 +77,7 @@ export default {
                   JSON.stringify(userInfo)
                 );
                 this.$store.dispatch("setUserInfo", userInfo);
-                this.$http_token.defaults.headers.common["Authorization"] = result.token;
+                setUserInfo(this.$http_token)
                 this.$message({
                   message: "登陆成功",
                   type: "success"
