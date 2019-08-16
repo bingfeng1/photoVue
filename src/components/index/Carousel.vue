@@ -2,7 +2,7 @@
   <div class="block">
     <!-- 走马灯，拎出来的效果 -->
     <el-carousel ref="carousel">
-      <el-carousel-item v-for="(item,index) in imgList" :key="index">
+      <el-carousel-item v-for="(item,index) in carousel" :key="index">
         <el-image style="width: 100%; height: 100%" :src="item" fit="cover"></el-image>
       </el-carousel-item>
     </el-carousel>
@@ -11,9 +11,11 @@
 
 <script>
 export default {
-  props:{
-    imgList:Array,
-    default:[]
+  props: {
+    carousel: {
+      typt: Array,
+      default: []
+    }
   }
-}
+};
 </script>

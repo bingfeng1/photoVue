@@ -24,13 +24,14 @@
         <el-row>
           <el-col :span="24">
             <!-- 走马灯 -->
-            <Carousel :imgList="imgList"></Carousel>
+            <Carousel :carousel="carousel"></Carousel>
           </el-col>
         </el-row>
         <!-- 整个图片列表放置位置 -->
         <el-row>
           <el-col :span="24" class="flexcenter">
-            <ImgList :span="8" height="300px" maxWidth="900px"></ImgList>
+            <!-- 这里的span长度应该改为自适应的 -->
+            <ImgList :imgList="imgList" :span="8" height="300px" maxWidth="900px" @error="getError"></ImgList>
           </el-col>
         </el-row>
       </el-main>
@@ -45,7 +46,7 @@ import Logo from "@/components/index/Logo.vue";
 import Search from "@/components/index/Search.vue";
 import ToLogin from "@/components/index/ToLogin.vue";
 import Carousel from "@/components/index/Carousel.vue";
-import ImgList from "@/components/index/ImgList.vue";
+import ImgList from "@/components/common/ImgList.vue";
 import User from "@/components/index/User.vue";
 
 import { getUserInfo } from "@/assets/js/common.js";
@@ -62,12 +63,14 @@ export default {
     User
   },
   mounted() {
+    this.getCarousel();
     this.getImgList();
   },
   data() {
     return {
-      imgList: [],
-      userInfo: {}
+      carousel: [],
+      userInfo: {},
+      imgList: []
     };
   },
   computed: {
@@ -76,13 +79,13 @@ export default {
     }
   },
   methods: {
-    // 通过后台，拿到图片列表
-    getImgList() {
+    // 通过后台，拿到走马灯列表
+    getCarousel() {
       this.$http.get("/image/carousel").then(res => {
         let result = res.data;
         // 直接使用地址不成功
         result = result.map(v => require(`@/assets/image/${v}`));
-        this.imgList = result;
+        this.carousel = result;
         // this.$nextTick(this.computedImgHeight)
       });
     },
@@ -103,6 +106,7 @@ export default {
       return data;
       // console.log(data);
     },
+    // 在session中是否存在用户信息
     checkLogin() {
       let userInfo = getUserInfo();
       // 如果有用户信息
@@ -116,8 +120,21 @@ export default {
         );
       }
       return !!this.$store.state.userInfo.token;
+    },
+    getImgList() {
+      this.$http.get("/image/allImage").then(res => {
+        let result = res.data;
+        result = result.map(v=>{
+          return `${this.$http.defaults.baseURL}/${v.filename}`
+        })
+        this.imgList = result;
+      });
+    },
+    getError(err){
+      alert(err)
     }
-  }
+  },
+  
 };
 </script>
 

@@ -41,7 +41,7 @@
       </section>
       <span slot="footer" class="dialog-footer">
         <el-button @click="showUpload = false">取 消</el-button>
-        <el-button type="primary" @click="toUpload">上 传</el-button>
+        <el-button type="primary" @click="toUpload" ref="toUpload">上 传</el-button>
       </span>
     </el-dialog>
   </div>
@@ -74,6 +74,7 @@ export default {
     }
   },
   methods: {
+    // 图片大图
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url;
       this.dialogVisible = true;
@@ -81,11 +82,21 @@ export default {
     getFileList(file, fileList) {
       this.fileList = fileList;
     },
+    // 上传的部分判断（还缺很多，比如限制9张等）
     toUpload() {
+      if (this.files.length == 0) {
+        this.$message({
+          type: "error",
+          message: "请先选择图片"
+        });
+        return;
+      }
       let formdata = new FormData();
       for (let v of this.files) {
         formdata.append("file", v);
       }
+      // 先禁止表单按钮，防止重复提交
+      this.$refs.toUpload.$el.disabled = true;
       this.$http_token
         .post("/user/upload", formdata, {
           headers: {
@@ -95,6 +106,7 @@ export default {
         .then(res => {
           let result = res.data;
           if (result == "success") {
+            this.fileList = [];
             for (let v of this.fileList) {
               v.status = "success";
             }
@@ -114,6 +126,10 @@ export default {
               })
               .catch(() => {
                 this.showUpload = false;
+              })
+              .finally(() => {
+                this.$refs.toUpload.$el.disabled = false;
+                this.$emit("finally");
               });
           }, 1000);
         });

@@ -8,6 +8,7 @@
       default-expand-all
       :filter-node-method="filterNode"
       :expand-on-click-node="false"
+      show-checkbox
       ref="tree"
     >
       <!-- 自定义tree内部样式 -->
