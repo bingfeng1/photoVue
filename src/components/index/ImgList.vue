@@ -8,7 +8,7 @@
           <i class="el-icon-picture-outline"></i>
         </div>
         </el-image>-->
-        <img v-lazy="url.image_url"/>
+        <img v-lazy="url"/>
       </el-col>
     </el-row>
   </div>
@@ -27,7 +27,7 @@ export default {
     };
   },
   mounted() {
-    // this.getImgList();
+    this.getImgList();
     this.$Lazyload.$on("loaded", function({ el, naturalHeight, error }) {
       if (naturalHeight == 1) {
         el.src = error;
@@ -38,6 +38,9 @@ export default {
     getImgList() {
       this.$http.get("/image/allImage").then(res => {
         let result = res.data;
+        result = result.map(v=>{
+          return `http://localhost:3000/${v.filename}`
+        })
         this.urls = result;
       });
     },

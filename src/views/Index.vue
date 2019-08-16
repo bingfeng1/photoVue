@@ -10,13 +10,11 @@
             <Logo></Logo>
           </template>
           <!-- 搜索功能 -->
-          <Search></Search>
+          <Search @search="search"></Search>
           <!-- 登录按钮 -->
           <template #login>
-            <ToLogin>
-              <template #default="{userInfo}">
-                <User :userInfo="userInfo"></User>
-              </template>
+            <ToLogin :isLogin="isLogin">
+              <User :userInfo="userInfo"></User>
             </ToLogin>
           </template>
         </MyHeader>
@@ -26,7 +24,7 @@
         <el-row>
           <el-col :span="24">
             <!-- 走马灯 -->
-            <Carousel></Carousel>
+            <Carousel :imgList="imgList"></Carousel>
           </el-col>
         </el-row>
         <!-- 整个图片列表放置位置 -->
@@ -50,6 +48,8 @@ import Carousel from "@/components/index/Carousel.vue";
 import ImgList from "@/components/index/ImgList.vue";
 import User from "@/components/index/User.vue";
 
+import { getUserInfo } from "@/assets/js/common.js";
+
 export default {
   name: "index",
   components: {
@@ -62,7 +62,62 @@ export default {
     User
   },
   mounted() {
+    this.getImgList();
   },
+  data() {
+    return {
+      imgList: [],
+      userInfo: {}
+    };
+  },
+  computed: {
+    isLogin() {
+      return this.checkLogin();
+    }
+  },
+  methods: {
+    // 通过后台，拿到图片列表
+    getImgList() {
+      this.$http.get("/image/carousel").then(res => {
+        let result = res.data;
+        // 直接使用地址不成功
+        result = result.map(v => require(`@/assets/image/${v}`));
+        this.imgList = result;
+        // this.$nextTick(this.computedImgHeight)
+      });
+    },
+    // 计算走马灯的高度（图片都是16:9的）
+    // computedImgHeight() {
+    //   let carouselDom = this.$refs.carousel;
+    //   let width = carouselDom.$el.clientWidth;
+    //   let height = (width / 16) * 9;
+    //   if (height > 500) {
+    //     height = 500;
+    //   }
+    //   carouselDom.$el.style.height = height + "px";
+    //   for (let i in carouselDom.$children) {
+    //     carouselDom.$children[i].$el.style.height = height + "px";
+    //   }
+    // },
+    search(data) {
+      return data;
+      // console.log(data);
+    },
+    checkLogin() {
+      let userInfo = getUserInfo();
+      // 如果有用户信息
+      if (userInfo) {
+        let { nickname, base64, type } = userInfo;
+        this.$set(this.userInfo, "nickname", nickname);
+        this.$set(
+          this.userInfo,
+          "base64",
+          "data:" + type + ";base64," + base64
+        );
+      }
+      return !!this.$store.state.userInfo.token;
+    }
+  }
 };
 </script>
 
