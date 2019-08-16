@@ -5,7 +5,10 @@
     </el-aside>
     <el-container>
       <el-main>
-        <Statistics :treeList="treeList">
+        <Statistics>
+          <template #right>
+            <ToUpload :treeList="treeList"></ToUpload>
+          </template>
         </Statistics>
         <div>图片墙</div>
       </el-main>
@@ -17,11 +20,14 @@
 <script>
 import Tree from "@/components/upload/Tree.vue";
 import Statistics from "@/components/upload/Statistics.vue";
+import ToUpload from "@/components/upload/ToUpload.vue";
+
 
 export default {
   components: {
     Tree,
-    Statistics
+    Statistics,
+    ToUpload
   },
 
   data() {
