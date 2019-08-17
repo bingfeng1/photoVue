@@ -31,7 +31,7 @@
         <el-row>
           <el-col :span="24" class="flexcenter">
             <!-- 这里的span长度应该改为自适应的 -->
-            <ImgList :imgList="imgList" :span="8" height="300px" maxWidth="900px" @error="getError"></ImgList>
+            <ImgList :imgListResult="imgListResult" height="300px" maxWidth="900px"></ImgList>
           </el-col>
         </el-row>
       </el-main>
@@ -70,7 +70,7 @@ export default {
     return {
       carousel: [],
       userInfo: {},
-      imgList: []
+      imgListResult: []
     };
   },
   computed: {
@@ -124,14 +124,8 @@ export default {
     getImgList() {
       this.$http.get("/image/allImage").then(res => {
         let result = res.data;
-        result = result.map(v=>{
-          return `${this.$http.defaults.baseURL}/${v.filename}`
-        })
-        this.imgList = result;
+        this.imgListResult = result;
       });
-    },
-    getError(err){
-      alert(err)
     }
   },
   

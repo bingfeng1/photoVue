@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container id="upload">
     <el-aside>
       <!-- 左侧树形列表 -->
       <Tree @setTreeList="getTreeList"></Tree>
@@ -15,7 +15,20 @@
         </Statistics>
         <!-- 个人的图片列表 -->
         <div>
-          <ImgList :imgList="imgList" :span="8" height="300px" maxWidth="900px" @error="getError"></ImgList>
+          <ImgList :imgListResult="imgListResult" v-loading="loading">
+            <template #bottom="{img}">
+              <div class="iconGroup">
+                <div>{{img.originalname}}</div>
+                <el-tooltip class="item" effect="light" content="重命名" placement="bottom">
+                  <i class="el-icon-edit" @click="rename(img)"></i>
+                </el-tooltip>
+
+                <el-tooltip class="item" effect="light" content="删除图片" placement="bottom">
+                  <i class="el-icon-delete" @click="deletePic(img)"></i>
+                </el-tooltip>
+              </div>
+            </template>
+          </ImgList>
         </div>
       </el-main>
     </el-container>
@@ -40,7 +53,8 @@ export default {
   data() {
     return {
       treeList: [],
-      imgList: []
+      imgListResult: [],
+      loading: true
     };
   },
 
@@ -53,19 +67,39 @@ export default {
     getImgList() {
       this.$http_token.get("/user/selfImg").then(res => {
         let result = res.data;
-        result = result.map(v => {
-          return `${this.$http.defaults.baseURL}/${v.filename}`;
-        });
-        this.imgList = result;
+        this.imgListResult = result;
+        this.loading = false;
       });
     },
-    // 如果获取图片列表发生错误
-    getError(err){
-      alert(err)
-    }
+    deletePic(img) {
+      this.$http_token
+        .delete("/user/deleteImg", {
+          params: img
+        })
+        .then(res => {
+          let result = res.data;
+          if (result == "success") {
+            this.imgListResult = this.imgListResult.filter(v => {
+              return v.id !== img.id;
+            });
+          }
+        });
+    },
   },
   mounted() {
     this.getImgList();
-  },
+  }
 };
 </script>
+
+<style lang="scss">
+.iconGroup {
+  i {
+    margin: 2px 10px;
+    cursor: pointer;
+    &:hover {
+      color: #409eff;
+    }
+  }
+}
+</style>

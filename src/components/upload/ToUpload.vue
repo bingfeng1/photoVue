@@ -4,7 +4,7 @@
     <el-button @click="showUpload = true">上传</el-button>
 
     <el-dialog title="上传图片" :visible.sync="showUpload" width="80%">
-      <section id="upload">
+      <section id="upload" v-loading="loading">
         <el-row class="select">
           <el-col :span="24">
             <span>上传的相册：</span>
@@ -57,7 +57,8 @@ export default {
       value: "",
       dialogImageUrl: "",
       dialogVisible: false,
-      fileList: []
+      fileList: [],
+      loading: false
     };
   },
   props: {
@@ -91,6 +92,7 @@ export default {
         });
         return;
       }
+      this.loading = true;
       let formdata = new FormData();
       for (let v of this.files) {
         formdata.append("file", v);
@@ -105,6 +107,8 @@ export default {
         })
         .then(res => {
           let result = res.data;
+
+          this.loading = false;
           if (result == "success") {
             this.fileList = [];
             for (let v of this.fileList) {
