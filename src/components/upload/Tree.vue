@@ -10,6 +10,8 @@
       :expand-on-click-node="false"
       show-checkbox
       ref="tree"
+      @check="selectType"
+      node-key="z_id"
     >
       <!-- 自定义tree内部样式 -->
       <span class="custom-tree-node" slot-scope="{ node, data }">
@@ -185,6 +187,10 @@ export default {
       }
       // 把结果抛出来，其他地方使用
       this.$emit("setTreeList", result);
+    },
+    // 获取选中的节点
+    selectType(data, node) {
+      let { checkedKeys } = node;
     }
   },
 

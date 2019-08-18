@@ -97,6 +97,8 @@ export default {
       for (let v of this.files) {
         formdata.append("file", v);
       }
+      // 增加在哪个分类中
+      formdata.append("type",this.value)
       // 先禁止表单按钮，防止重复提交
       this.$refs.toUpload.$el.disabled = true;
       this.$http_token
