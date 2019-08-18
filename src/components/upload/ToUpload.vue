@@ -110,10 +110,10 @@ export default {
 
           this.loading = false;
           if (result == "success") {
-            this.fileList = [];
             for (let v of this.fileList) {
               v.status = "success";
             }
+            this.fileList = [];
           }
           setTimeout(() => {
             this.$refs.imgList.clearFiles();

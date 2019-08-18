@@ -1,18 +1,18 @@
 <template>
-  <div class="hideScroll fixCenter" :style="{maxWidth:maxWidth}">
+  <div class="hideScroll fixCenter" :style="{maxWidth:maxWidth,width:width}">
     <el-row class="showImgs">
       <el-col
         style="minHeight: 10vh"
         :xs="8"
         :sm="8"
         :md="6"
-        :lg="6"
-        :xl="6"
+        :lg="4"
+        :xl="4"
         v-for="(img,index) in imgLists"
         :key="index"
       >
         <el-card :body-style="{padding:'3px'}" shadow="hover">
-          <el-image :src="img.url" lazy @error="getError()" :preview-src-list="imgLists">
+          <el-image :src="img.url" lazy @error="getError()" :preview-src-list="[img.url]">
             <div slot="error" class="image-slot">
               <img :src="errPath" width="100%" />
             </div>
@@ -28,7 +28,11 @@
 export default {
   props: {
     maxWidth: String,
-    imgListResult: Array
+    imgListResult: Array,
+    width:{
+      type:String,
+      defaults:'100%'
+    }
   },
   computed: {
     imgLists() {
@@ -40,7 +44,7 @@ export default {
           url: `${this.$http.defaults.baseURL}/${v.filename}`
         };
       });
-    }
+    },
   },
   methods: {
     getError(err) {

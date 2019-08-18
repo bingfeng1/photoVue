@@ -31,7 +31,7 @@
         <el-row>
           <el-col :span="24" class="flexcenter">
             <!-- 这里的span长度应该改为自适应的 -->
-            <ImgList :imgListResult="imgListResult" height="300px" maxWidth="900px"></ImgList>
+            <ImgList :imgListResult="imgListResult" height="300px" minWidth="900px" width="90vw"></ImgList>
           </el-col>
         </el-row>
       </el-main>
