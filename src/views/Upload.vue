@@ -27,6 +27,10 @@
                   <i class="el-icon-delete" @click="deletePic(img)"></i>
                 </el-tooltip>
 
+                <el-tooltip class="item" effect="light" content="下载" placement="bottom">
+                  <i class="el-icon-download" @click="download(img)"></i>
+                </el-tooltip>
+
                 <el-dialog :visible.sync="showUpdate">
                   <el-form ref="form" :model="form" label-width="80px">
                     <el-form-item label="重命名">
@@ -41,6 +45,8 @@
               </div>
             </template>
           </ImgList>
+
+          <a :download="downloadName" :href="downloadUrl" hidden id="download"></a>
         </div>
       </el-main>
     </el-container>
@@ -71,7 +77,9 @@ export default {
       form: {
         id: "",
         originalname: ""
-      }
+      },
+      downloadUrl: "",
+      downloadName:""
     };
   },
 
@@ -119,6 +127,36 @@ export default {
           alert("修改失败或者修改数量过多");
         }
       });
+    },
+    // 下载
+    download(img) {
+      this.downloadName = img.originalname;
+      this.$http
+        .get("/image/downloads", {
+          params: img
+        }).then(res=>{
+          return res
+        })
+        .then(res=> {
+          //将从后台获取的图片流进行转换
+          return (
+            "data:image/png;base64," +
+            btoa(
+              new Uint8Array(res.data).reduce(
+                (data, byte) => data + String.fromCharCode(byte),
+                ""
+              )
+            )
+          );
+        })
+        .then(data=> {
+          //接收转换后的Base64图片
+          this.downloadUrl = data;
+          this.$nextTick(()=>{
+            document.getElementById('download').click()
+          })
+        })
+        .catch({});
     }
   },
   mounted() {
