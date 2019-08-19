@@ -2,7 +2,7 @@
   <el-container id="upload">
     <el-aside>
       <!-- 左侧树形列表 -->
-      <Tree @setTreeList="getTreeList"></Tree>
+      <Tree @setTreeList="getTreeList" @hasCheck="getImgList"></Tree>
     </el-aside>
     <el-container>
       <el-main>
@@ -88,12 +88,16 @@ export default {
       this.treeList = result;
     },
     // 获取自身的图片列表
-    getImgList() {
-      this.$http_token.get("/user/selfImg").then(res => {
-        let result = res.data;
-        this.imgListResult = result;
-        this.loading = false;
-      });
+    getImgList(checkedKeys = [], flag) {
+      this.$http_token
+        .get("/user/selfImg", {
+          params: { checkedKeys, flag }
+        })
+        .then(res => {
+          let result = res.data;
+          this.imgListResult = result;
+          this.loading = false;
+        });
     },
     deletePic(img) {
       this.$http_token
@@ -135,7 +139,7 @@ export default {
     }
   },
   mounted() {
-    this.getImgList();
+    this.getImgList([], true);
   }
 };
 </script>

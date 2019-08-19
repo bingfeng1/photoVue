@@ -6,6 +6,7 @@
     <el-dialog title="上传图片" :visible.sync="showUpload" width="80%">
       <section id="upload" v-loading="loading">
         <el-row class="select">
+          <el-alert title="请先选择相册" type="error" v-show="!value"></el-alert>
           <el-col :span="24">
             <span>上传的相册：</span>
             <el-select v-model="value" placeholder="请选择">
@@ -41,7 +42,12 @@
       </section>
       <span slot="footer" class="dialog-footer">
         <el-button @click="showUpload = false">取 消</el-button>
-        <el-button type="primary" @click="toUpload" ref="toUpload">上 传</el-button>
+        <el-button
+          :type="value?'primary':'danger'"
+          @click="toUpload"
+          ref="toUpload"
+          :disabled="!value"
+        >上 传</el-button>
       </span>
     </el-dialog>
   </div>
@@ -98,7 +104,7 @@ export default {
         formdata.append("file", v);
       }
       // 增加在哪个分类中
-      formdata.append("type",this.value)
+      formdata.append("type", this.value);
       // 先禁止表单按钮，防止重复提交
       this.$refs.toUpload.$el.disabled = true;
       this.$http_token

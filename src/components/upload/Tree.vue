@@ -191,6 +191,7 @@ export default {
     // 获取选中的节点
     selectType(data, node) {
       let { checkedKeys } = node;
+      this.$emit("hasCheck",checkedKeys)
     }
   },
 
@@ -205,6 +206,7 @@ export default {
         {
           id: 0,
           label: "全部",
+          z_id:0,
           children: []
         }
       ],
@@ -219,6 +221,10 @@ export default {
     // 进入时，根据存放的token获取用户信息
     this.$http_token.get("/user/imgType").then(res => {
       this.makeTreeList(res);
+      // 默认使用一次点击全选
+      this.$nextTick(()=>{
+        this.$refs.tree.setChecked(0,true,true)
+      })
     });
     // 树形的input框如果取消焦点，默认缩回去
     this.$refs.tree.$el.addEventListener("mouseleave", () => {
