@@ -1,5 +1,6 @@
 <template>
   <section id="tree">
+    <router-link to="/">返回首页</router-link>
     <el-input placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
     <el-tree
       class="filter-tree"
