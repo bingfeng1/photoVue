@@ -30,23 +30,22 @@
                 <el-tooltip class="item" effect="light" content="下载" placement="bottom">
                   <i class="el-icon-download" @click="download(img)"></i>
                 </el-tooltip>
-
-                <el-dialog :visible.sync="showUpdate">
-                  <el-form ref="form" :model="form" label-width="80px">
-                    <el-form-item label="重命名">
-                      <el-input v-model="form.originalname"></el-input>
-                    </el-form-item>
-                  </el-form>
-                  <span slot="footer" class="dialog-footer">
-                    <el-button @click="showUpdate = false">取 消</el-button>
-                    <el-button type="primary" @click="rename">确 定</el-button>
-                  </span>
-                </el-dialog>
               </div>
             </template>
           </ImgList>
-
-          <a :download="downloadName" :href="downloadUrl" hidden id="download"></a>
+          <!-- 这个下载部分的耦合度高了，暂时不清楚该如何去解耦（主要问题在重命名与确认选择的是哪个图下载）。也有可能这个是不需要单独拿出来 -->
+          <Download ref="download"></Download>
+          <el-dialog :visible.sync="showUpdate">
+            <el-form ref="form" :model="form" label-width="80px">
+              <el-form-item label="重命名">
+                <el-input v-model="form.originalname"></el-input>
+              </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="showUpdate = false">取 消</el-button>
+              <el-button type="primary" @click="rename">确 定</el-button>
+            </span>
+          </el-dialog>
         </div>
       </el-main>
     </el-container>
@@ -59,13 +58,15 @@ import Tree from "@/components/upload/Tree.vue";
 import Statistics from "@/components/upload/Statistics.vue";
 import ToUpload from "@/components/upload/ToUpload.vue";
 import ImgList from "@/components/common/ImgList.vue";
+import Download from "@/components/common/Download.vue";
 
 export default {
   components: {
     Tree,
     Statistics,
     ToUpload,
-    ImgList
+    ImgList,
+    Download
   },
 
   data() {
@@ -77,9 +78,7 @@ export default {
       form: {
         id: "",
         originalname: ""
-      },
-      downloadUrl: "",
-      downloadName:""
+      }
     };
   },
 
@@ -130,33 +129,9 @@ export default {
     },
     // 下载
     download(img) {
-      this.downloadName = img.originalname;
-      this.$http
-        .get("/image/downloads", {
-          params: img
-        }).then(res=>{
-          return res
-        })
-        .then(res=> {
-          //将从后台获取的图片流进行转换
-          return (
-            "data:image/png;base64," +
-            btoa(
-              new Uint8Array(res.data).reduce(
-                (data, byte) => data + String.fromCharCode(byte),
-                ""
-              )
-            )
-          );
-        })
-        .then(data=> {
-          //接收转换后的Base64图片
-          this.downloadUrl = data;
-          this.$nextTick(()=>{
-            document.getElementById('download').click()
-          })
-        })
-        .catch({});
+      // 可能存在先提前修改过名称
+      img.originalname = this.$refs[img.id].innerText;
+      this.$refs.download.download(img);
     }
   },
   mounted() {
