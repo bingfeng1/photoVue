@@ -20,28 +20,16 @@
         <!-- 如果是第一条（全部） -->
         <span v-show="data.id == 0">
           <!-- 用于删除使用 -->
-          <el-button
-            v-show="!isadd"
-            type="text"
-            size="mini"
-            @click="() => showcut()"
-          >{{iscut|cutWord}}</el-button>
+          <el-button v-show="!isadd" type="text" @click="() => showcut()">{{iscut|cutWord}}</el-button>
         </span>
         <span v-if="data.id == 0">
           <!-- 添加一级的输入框，默认隐藏 -->
-          <el-input
-            size="mini"
-            placeholder="请输入内容"
-            ref="addInput"
-            v-show="isadd"
-            v-model="addInput"
-          ></el-input>
+          <el-input placeholder="请输入内容" ref="addInput" v-show="isadd" v-model="addInput"></el-input>
           <!-- 输入框的确认按钮 -->
           <el-button
             class="success"
             v-show="isadd"
             type="text"
-            size="mini"
             icon="el-icon-circle-check"
             @click="() => add()"
           ></el-button>
@@ -49,7 +37,6 @@
           <el-button
             v-show="!isadd"
             type="text"
-            size="mini"
             icon="el-icon-circle-plus-outline"
             @click="() => showInput()"
           ></el-button>
@@ -60,11 +47,16 @@
             class="error"
             v-show="iscut"
             type="text"
-            size="mini"
             icon="el-icon-remove-outline"
             @click="() => cut(node,data)"
           ></el-button>
-          <el-button type="text" size="mini" icon="el-icon-edit" @click="() => edit(node,data)"></el-button>
+          <el-button
+            type="text"
+            :icon="data.islock?'el-icon-lock':'el-icon-unlock'"
+            @click="() => lock(node,data)"
+            :class="data.islock|locked"
+          ></el-button>
+          <el-button type="text" icon="el-icon-edit" @click="() => edit(node,data)"></el-button>
         </span>
       </span>
     </el-tree>
@@ -99,6 +91,9 @@ export default {
   filters: {
     cutWord(value) {
       return value ? "取消" : "删除";
+    },
+    locked(value) {
+      return value ? "error" : "success";
     }
   },
 
@@ -180,6 +175,27 @@ export default {
       dom.focus();
     },
 
+    // 是否设为私有相册，（这个应该不需要传值，直接返回，判断是否成功即可）
+    lock(node, data) {
+      let id = data.z_id;
+      this.$http_token
+        .put("/user/islock", {
+          id,
+          islock: !data.islock
+        })
+        .then(res => {
+          let result = res;
+          if (result.data == "success") {
+            data.islock = !data.islock;
+            this.$message({
+              showClose: true,
+              message: "成功改变设置",
+              type: "success"
+            });
+          }
+        });
+    },
+
     // 每次重新渲染时的操作
     hasChange(newChild) {
       if (newChild) {
@@ -208,6 +224,7 @@ export default {
           if (this.firstWatch) {
             this.firstWatch = false;
             this.$refs.tree.setChecked(0, true, true);
+            this.checkedKeys = this.treedata.map(v=>v.z_id)
           } else {
             this.$refs.tree.setCheckedKeys(this.checkedKeys);
           }
@@ -263,6 +280,10 @@ section {
       width: 150px;
       min-width: 150px;
       margin-right: 10px;
+    }
+    .el-button{
+      padding-top: 0px;
+      padding-bottom: 0px;
     }
     .success {
       color: #67c23a;

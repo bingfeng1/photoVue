@@ -25,7 +25,7 @@
         <div>
           <ImgList :imgListResult="imgListResult" v-loading="loading">
             <template #bottom="{img}">
-              <ImgBotton :img="img"></ImgBotton>
+              <ImgBotton :img="img" @delete="deletePic"></ImgBotton>
             </template>
           </ImgList>
         </div>
@@ -90,7 +90,12 @@ export default {
       let result = res.data;
       this.treedata[0].children = [];
       for (let v of result) {
-        const newChild = { id: v.orderId, label: v.typename, z_id: v.id };
+        const newChild = {
+          id: v.orderId,
+          label: v.typename,
+          z_id: v.id,
+          islock: v.islock
+        };
         this.treedata[0].children.push(newChild);
       }
       this.treeList = result;
@@ -113,6 +118,11 @@ export default {
           this.imgListResult = result;
           this.loading = false;
         });
+    },
+    deletePic(id) {
+      this.imgListResult = this.imgListResult.filter(v => {
+        return v.id !== id;
+      });
     }
   },
   mounted() {
@@ -120,16 +130,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss">
-.iconGroup {
-  min-height: 3rem;
-  i {
-    margin: 4px 10px;
-    cursor: pointer;
-    &:hover {
-      color: #409eff;
-    }
-  }
-}
-</style>
