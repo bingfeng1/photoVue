@@ -1,10 +1,9 @@
 <template>
   <section id="tree">
-    <router-link to="/">返回首页</router-link>
     <el-input placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
     <el-tree
       class="filter-tree"
-      :data="data"
+      :data="treedata"
       :props="defaultProps"
       default-expand-all
       :filter-node-method="filterNode"
@@ -73,11 +72,27 @@
 </template>
 
 <script>
+// 所有修改都提交至父组件，因为其他组件也需要树形结构的值，需要抛出来
+// 原来做法是直接在组件内抛出，但在后台传参查询的时候发生一定的问题
 export default {
+  props: {
+    treedata: {
+      type: Array
+    },
+    defaultProps: Object
+  },
   // 过滤筛选
   watch: {
     filterText(val) {
       this.$refs.tree.filter(val);
+    },
+    // 父组件的数据改变时，修改属性列表
+    treedata: {
+      handler(val) {
+        this.hasChange(val[0].children);
+      },
+      // 对象内部变化时监听
+      deep: true
     }
   },
 
@@ -99,14 +114,15 @@ export default {
         this.$refs.addInput.focus();
       });
     },
+    // 切换删除按钮
     showcut() {
       this.iscut = !this.iscut;
     },
-
+    // 增加按钮
     add() {
       if (this.addInput) {
         let maxId = 0;
-        for (let i of this.data[0].children) {
+        for (let i of this.treedata[0].children) {
           maxId = maxId < i.id ? i.id : maxId;
         }
 
@@ -116,7 +132,8 @@ export default {
           orderId: ++maxId
         };
         this.$http_token.post("/user/addImgType", params).then(res => {
-          this.makeTreeList(res);
+          // 往父组件推送
+          this.$emit("changeTreedata", res);
           //   这里还需要判断，是否已存在这个标签，目前暂无此功能
           this.isadd = false;
           this.addInput = "";
@@ -144,7 +161,16 @@ export default {
           }
         })
         .then(res => {
-          this.makeTreeList(res);
+          let result = res;
+          if (result.data == "未清空") {
+            this.$message({
+              showClose: true,
+              message: "该相册下依然有图片，请清空相册再做删除操作",
+              type: "warning"
+            });
+            return;
+          }
+          this.$emit("changeTreedata", res);
         });
     },
 
@@ -154,45 +180,45 @@ export default {
       dom.focus();
     },
 
-    axiosEdit(newChild) {
-      let that = this;
-      // 绑定修改事件
-      this.$nextTick(() => {
-        let dom = this.$refs[newChild.label];
-        dom.addEventListener("blur", function() {
-          this.setAttribute("contenteditable", false);
-          if (this.innerText != newChild.label) {
-            // 这里操作修改部分
-            that.$http_token
-              .put("/user/updateImgType", {
-                id: newChild.z_id,
-                typename: this.innerText
-              })
-              .then(res => {
-                // 这里需要写入成功或者失败
-                that.makeTreeList(res);
-              });
+    // 每次重新渲染时的操作
+    hasChange(newChild) {
+      if (newChild) {
+        let that = this;
+        // 绑定修改事件
+        this.$nextTick(() => {
+          for (let v of newChild) {
+            let dom = this.$refs[v.label];
+            dom.addEventListener("blur", function() {
+              this.setAttribute("contenteditable", false);
+              if (this.innerText != v.label) {
+                // 这里操作修改部分
+                that.$http_token
+                  .put("/user/updateImgType", {
+                    id: v.z_id,
+                    typename: this.innerText
+                  })
+                  .then(res => {
+                    // 这里需要写入成功或者失败
+                    that.$emit("changeTreedata", res);
+                  });
+              }
+            });
+          }
+          // 如果是第一次进入watch，那么就让tree全选（放在ceated和mounted都不行，因为列表是异步的）
+          if (this.firstWatch) {
+            this.firstWatch = false;
+            this.$refs.tree.setChecked(0, true, true);
+          } else {
+            this.$refs.tree.setCheckedKeys(this.checkedKeys);
           }
         });
-      });
-    },
-
-    // 通过返回的值，重新画tree
-    makeTreeList(res) {
-      let result = res.data;
-      this.data[0].children = [];
-      for (let v of result) {
-        const newChild = { id: v.orderId, label: v.typename, z_id: v.id };
-        this.data[0].children.push(newChild);
-        this.axiosEdit(newChild);
       }
-      // 把结果抛出来，其他地方使用
-      this.$emit("setTreeList", result);
     },
     // 获取选中的节点
     selectType(data, node) {
       let { checkedKeys } = node;
-      this.$emit("hasCheck",checkedKeys)
+      this.checkedKeys = checkedKeys;
+      this.$emit("hasCheck", checkedKeys);
     }
   },
 
@@ -202,31 +228,12 @@ export default {
       addInput: "", // 增加树形数据
       isadd: false, //切换是否显示输入框
       iscut: false, //展示删除框
-      // 树形结构的内容
-      data: [
-        {
-          id: 0,
-          label: "全部",
-          z_id:0,
-          children: []
-        }
-      ],
-      defaultProps: {
-        children: "children",
-        label: "label"
-      }
+      checkedKeys: [],
+      firstWatch: true
     };
   },
 
   mounted() {
-    // 进入时，根据存放的token获取用户信息
-    this.$http_token.get("/user/imgType").then(res => {
-      this.makeTreeList(res);
-      // 默认使用一次点击全选
-      this.$nextTick(()=>{
-        this.$refs.tree.setChecked(0,true,true)
-      })
-    });
     // 树形的input框如果取消焦点，默认缩回去
     this.$refs.tree.$el.addEventListener("mouseleave", () => {
       this.isadd = false;
@@ -238,7 +245,7 @@ export default {
 <style lang="scss" scoped>
 section {
   height: 90vh;
-  padding: 5vh 10px;
+  padding: 5px 10px;
   .el-input {
     width: 100%;
   }

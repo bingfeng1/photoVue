@@ -42,7 +42,7 @@
 <script>
 // @ is an alias to /src
 import MyHeader from "@/components/index/Header.vue";
-import Logo from "@/components/index/Logo.vue";
+import Logo from "@/components/common/Logo.vue";
 import Search from "@/components/index/Search.vue";
 import ToLogin from "@/components/index/ToLogin.vue";
 import Carousel from "@/components/index/Carousel.vue";
