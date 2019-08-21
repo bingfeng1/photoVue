@@ -24,8 +24,7 @@
         <el-button type="primary" @click="rename">确 定</el-button>
       </span>
     </el-dialog>
-    <img :href="url" width="1000">
-    <a :download="name" :href="url" hidden :ref="img.id"></a>
+    <!-- <a :download="name" :href="url" hidden :ref="img.id"></a> -->
   </div>
 </template>
 
@@ -39,8 +38,8 @@ export default {
         id: "",
         originalname: ""
       },
-      url: "",
-      name: ""
+      // url: "",
+      // name: ""
     };
   },
   methods: {
@@ -76,7 +75,28 @@ export default {
     },
     // 下载
     download() {
+      this.$http
+        .get("/image/downloads", {
+          params: this.img,
+          responseType: "blob"
+        })
+        .then(res => {
+          let data = res.data;
+          // 直接使用Blob就行了
+          let url = window.URL.createObjectURL(new Blob([data]));
+          let link = document.createElement("a");
+          link.style.display = "none";
+          link.href = url;
+          link.setAttribute("download", `${this.img.originalname}.${this.img.ext}`);
+
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        })
+      
+      // 下面两种方法，下载大文件的时候出现问题，我这里是下载7.8M的图片，失败
       // let imgsrc = this.img.url;
+      // let name = this.img.originalname
       // let image = new Image();
       // // 解决跨域 Canvas 污染问题
       // image.setAttribute("crossOrigin", "anonymous");
@@ -95,34 +115,35 @@ export default {
       // };
       // image.src = imgsrc;
 
-      this.name = this.img.originalname;
-      this.$http
-        .get("/image/downloads", {
-          params: this.img,
-          responseType: "arraybuffer"
-        })
-        .then(res => {
-          //将从后台获取的图片流进行转换
-          return (
-            "data:image/png;base64," +
-            btoa(
-              new Uint8Array(res.data).reduce(
-                (data, byte) => data + String.fromCharCode(byte),
-                ""
-              )
-            )
-          );
-        })
-        .then(data => {
-          //接收转换后的Base64图片
-          this.url = data;
-          this.$nextTick(() => {
-            this.$refs[this.img.id].click();
-          });
-        })
-        .catch(err=>{
-          console.log(err)
-        });
+      // 这是第二种方法
+      // this.name = this.img.originalname;
+      // this.$http
+      //   .get("/image/downloads", {
+      //     params: this.img,
+      //     responseType: "arraybuffer"
+      //   })
+      //   .then(res => {
+      //     //将从后台获取的图片流进行转换
+      //     return (
+      //       "data:image/png;base64," +
+      //       btoa(
+      //         new Uint8Array(res.data).reduce(
+      //           (data, byte) => data + String.fromCharCode(byte),
+      //           ""
+      //         )
+      //       )
+      //     );
+      //   })
+      //   .then(data => {
+      //     //接收转换后的Base64图片
+      //     this.url = data;
+      //     this.$nextTick(() => {
+      //       this.$refs[this.img.id].click();
+      //     });
+      //   })
+      //   .catch(err=>{
+      //     console.log(err)
+      //   });
     }
   }
 };

@@ -31,7 +31,12 @@
         <el-row>
           <el-col :span="24" class="flexcenter">
             <!-- 这里的span长度应该改为自适应的 -->
-            <ImgList :imgListResult="imgListResult" height="300px" minWidth="900px" width="90vw"></ImgList>
+            <ImgList :imgListResult="imgListResult" minWidth="900px" width="90vw">
+              <!-- 这里设置收藏 -->
+              <template #bottom="{img}">
+                <ImgBotton :img="img"></ImgBotton>
+              </template>
+            </ImgList>
           </el-col>
         </el-row>
       </el-main>
@@ -48,6 +53,7 @@ import ToLogin from "@/components/index/ToLogin.vue";
 import Carousel from "@/components/index/Carousel.vue";
 import ImgList from "@/components/common/ImgList.vue";
 import User from "@/components/index/User.vue";
+import ImgBotton from "@/components/index/ImgBotton.vue";
 
 import { getUserInfo } from "@/assets/js/common.js";
 
@@ -60,10 +66,15 @@ export default {
     ToLogin,
     Carousel,
     ImgList,
-    User
+    User,
+    ImgBotton
   },
   mounted() {
     this.getCarousel();
+    this.getImgList();
+  },
+  // 由于使用了keep-alive，这里需要返回首页的时候，重新刷新图片墙
+  activated() {
     this.getImgList();
   },
   data() {
@@ -127,8 +138,7 @@ export default {
         this.imgListResult = result;
       });
     }
-  },
-  
+  }
 };
 </script>
 

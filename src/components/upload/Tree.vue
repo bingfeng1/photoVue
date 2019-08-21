@@ -24,7 +24,7 @@
         </span>
         <span v-if="data.id == 0">
           <!-- 添加一级的输入框，默认隐藏 -->
-          <el-input placeholder="请输入内容" ref="addInput" v-show="isadd" v-model="addInput"></el-input>
+          <el-input placeholder="请输入内容" ref="addInput" size="mini" v-show="isadd" v-model="addInput"></el-input>
           <!-- 输入框的确认按钮 -->
           <el-button
             class="success"

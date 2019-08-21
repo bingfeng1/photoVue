@@ -36,14 +36,11 @@ export default {
   },
   computed: {
     imgLists() {
-      return this.imgListResult.map(v => {
-        return {
-          id: v.id,
-          filename: v.filename,
-          originalname: v.originalname,
-          url: `${this.$http.defaults.baseURL}/${v.filename}`
-        };
-      });
+      // 直接添加url属性，这个方式更好
+      for(let v of this.imgListResult){
+        v.url = `${this.$http.defaults.baseURL}/${v.filename}`
+      }
+      return this.imgListResult
     },
   },
   methods: {
