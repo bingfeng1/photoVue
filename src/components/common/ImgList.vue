@@ -3,11 +3,11 @@
     <el-row class="showImgs">
       <el-col
         style="minHeight: 10vh"
-        :xs="8"
-        :sm="8"
-        :md="6"
-        :lg="4"
-        :xl="4"
+        :xs="imgWidthList[0]"
+        :sm="imgWidthList[1]"
+        :md="imgWidthList[2]"
+        :lg="imgWidthList[3]"
+        :xl="imgWidthList[4]"
         v-for="(img,index) in imgLists"
         :key="index"
       >
@@ -29,19 +29,28 @@ export default {
   props: {
     maxWidth: String,
     imgListResult: Array,
-    width:{
-      type:String,
-      defaults:'100%'
+    width: {
+      type: String,
+      default: "100%"
+    },
+    imgWidthList: {
+      type: Array,
+      default() {
+        return [24, 24, 24, 8, 6];
+      },
+      validator(value) {
+        return value.length === 5;
+      }
     }
   },
   computed: {
     imgLists() {
       // 直接添加url属性，这个方式更好
-      for(let v of this.imgListResult){
-        v.url = `${this.$http.defaults.baseURL}/${v.filename}`
+      for (let v of this.imgListResult) {
+        v.url = `${this.$http.defaults.baseURL}/${v.filename}`;
       }
-      return this.imgListResult
-    },
+      return this.imgListResult;
+    }
   },
   methods: {
     getError(err) {
@@ -63,12 +72,11 @@ export default {
 }
 
 .fixCenter {
-  display: inline-flex;
   justify-content: center;
 }
 
 .showImgs {
-  height: 400px;
+  height: 500px;
   overflow: auto;
 }
 .el-col {

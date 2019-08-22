@@ -31,7 +31,7 @@
         <el-row>
           <el-col :span="24" class="flexcenter">
             <!-- 这里的span长度应该改为自适应的 -->
-            <ImgList :imgListResult="imgListResult" minWidth="900px" width="90vw">
+            <ImgList :imgListResult="imgListResult" minWidth="900px" width="90vw" :imgWidthList="[8,8,6,4,4]">
               <!-- 这里设置收藏 -->
               <template #bottom="{img}">
                 <ImgBotton :img="img"></ImgBotton>

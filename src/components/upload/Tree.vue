@@ -261,8 +261,7 @@ export default {
 
 <style lang="scss" scoped>
 section {
-  height: 90vh;
-  padding: 5px 10px;
+  padding: 20px;
   .el-input {
     width: 100%;
   }

@@ -28,10 +28,10 @@ map
     });
   })
   .set("upload", function(vm) {
-    vm.$router.push("/upload");
+    vm.$router.push("/user/upload");
   })
   .set("collect", function(vm) {
-    vm.$router.push("/collect")
+    vm.$router.push("/user/collect")
   });
 export default {
   props: {

@@ -1,0 +1,60 @@
+<template>
+  <el-container id="upload">
+    <el-aside>
+      <el-row>
+        <el-col :span="24" id="menu">
+          <router-link to="/">
+            <Logo></Logo>
+          </router-link>
+          <el-card>
+            <el-menu class="el-menu-vertical-demo" :router="true" style="textAlign:left">
+              <el-menu-item index="/">
+                <i class="el-icon-menu"></i>
+                <span slot="title">个人中心</span>
+              </el-menu-item>
+              <el-menu-item index="/user/collect">
+                <i class="el-icon-document"></i>
+                <span slot="title">收藏</span>
+              </el-menu-item>
+              <el-menu-item index="/user/upload">
+                <i class="el-icon-setting"></i>
+                <span slot="title">上传作品</span>
+              </el-menu-item>
+            </el-menu>
+          </el-card>
+        </el-col>
+      </el-row>
+    </el-aside>
+    <el-container>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
+    </el-container>
+  </el-container>
+</template>
+
+<script>
+import Logo from "@/components/common/Logo.vue";
+export default {
+  components: {
+    Logo
+  },
+  methods: {}
+};
+</script>
+
+<style lang="scss" scopes>
+#menu{
+    margin-top: 2.5rem;
+    padding: 0px 10px;
+    .el-card{
+        margin-top:2.5rem;
+        .el-menu-item{
+            border-bottom: 1px solid rgba(131, 131, 131, 0.418);
+        }
+    }
+}
+.el-menu-vertical-demo {
+    border-right: none;
+}
+</style>

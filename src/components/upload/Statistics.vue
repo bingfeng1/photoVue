@@ -40,7 +40,6 @@ export default {
 
 <style lang="scss" scoped>
 section {
-  margin: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
