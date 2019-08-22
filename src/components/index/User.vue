@@ -20,8 +20,8 @@ const map = new Map();
 map
   .set("unlogin", function(vm) {
     window.sessionStorage.removeItem("userInfo");
-    vm.$store.dispatch("clearUserInfo")
-    vm.$http_token.defaults.headers.common["Authorization"] = ""
+    vm.$store.dispatch("clearUserInfo");
+    vm.$http_token.defaults.headers.common["Authorization"] = "";
     vm.$message({
       message: "注销成功",
       type: "success"
@@ -29,6 +29,9 @@ map
   })
   .set("upload", function(vm) {
     vm.$router.push("/upload");
+  })
+  .set("collect", function(vm) {
+    vm.$router.push("/collect")
   });
 export default {
   props: {

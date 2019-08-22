@@ -29,7 +29,7 @@ new Vue({
   router,
   store,
   render: h => h(App),
-  mounted() {
+  beforeCreate() {
     // 设置一个带有token的axios
     let $http_token = axios.create()
     setUserInfo($http_token)

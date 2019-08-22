@@ -71,7 +71,6 @@ export default {
   },
   mounted() {
     this.getCarousel();
-    this.getImgList();
   },
   // 由于使用了keep-alive，这里需要返回首页的时候，重新刷新图片墙
   activated() {
@@ -133,10 +132,18 @@ export default {
       return !!this.$store.state.userInfo.token;
     },
     getImgList() {
-      this.$http.get("/image/allImage").then(res => {
-        let result = res.data;
-        this.imgListResult = result;
-      });
+      // 如果登录了，那么查看哪些已经收藏过了
+      if (this.isLogin) {
+        this.$http_token.get("/user/allImage").then(res => {
+          let result = res.data;
+          this.imgListResult = result;
+        });
+      } else {
+        this.$http.get("/image/allImage").then(res => {
+          let result = res.data;
+          this.imgListResult = result;
+        });
+      }
     }
   }
 };

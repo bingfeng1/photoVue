@@ -36,7 +36,18 @@ const router = new Router({
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "login" */ './views/Upload.vue')
+      component: () => import(/* webpackChunkName: "upload" */ './views/Upload.vue')
+    },
+    {
+      path: '/Collect',
+      name: 'collect',
+      meta: {
+        auth: true
+      },
+      // route level code-splitting
+      // this generates a separate chunk (about.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import(/* webpackChunkName: "collect" */ './views/Collect.vue')
     }
   ]
 })
