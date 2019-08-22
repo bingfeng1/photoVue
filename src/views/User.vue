@@ -7,19 +7,25 @@
             <Logo></Logo>
           </router-link>
           <el-card>
-            <el-menu class="el-menu-vertical-demo" :router="true" style="textAlign:left">
-              <el-menu-item index="/">
-                <i class="el-icon-menu"></i>
-                <span slot="title">个人中心</span>
-              </el-menu-item>
-              <el-menu-item index="/user/collect">
-                <i class="el-icon-document"></i>
-                <span slot="title">收藏</span>
-              </el-menu-item>
-              <el-menu-item index="/user/upload">
-                <i class="el-icon-setting"></i>
-                <span slot="title">上传作品</span>
-              </el-menu-item>
+            <el-menu class="el-menu-vertical-demo" style="textAlign:left">
+              <router-link to="/">
+                <el-menu-item index="/index">
+                  <i class="el-icon-menu"></i>
+                  <span slot="title">个人中心</span>
+                </el-menu-item>
+              </router-link>
+              <router-link to="/user/collect">
+                <el-menu-item index="collect">
+                  <i class="el-icon-document"></i>
+                  <span slot="title">收藏</span>
+                </el-menu-item>
+              </router-link>
+              <router-link to="/user/upload">
+                <el-menu-item index="upload">
+                  <i class="el-icon-setting"></i>
+                  <span slot="title">上传作品</span>
+                </el-menu-item>
+              </router-link>
             </el-menu>
           </el-card>
         </el-col>
@@ -44,17 +50,17 @@ export default {
 </script>
 
 <style lang="scss" scopes>
-#menu{
+#menu {
+  margin-top: 2.5rem;
+  padding: 0px 10px;
+  .el-card {
     margin-top: 2.5rem;
-    padding: 0px 10px;
-    .el-card{
-        margin-top:2.5rem;
-        .el-menu-item{
-            border-bottom: 1px solid rgba(131, 131, 131, 0.418);
-        }
+    .el-menu-item {
+      border-bottom: 1px solid rgba(131, 131, 131, 0.418);
     }
+  }
 }
 .el-menu-vertical-demo {
-    border-right: none;
+  border-right: none;
 }
 </style>
