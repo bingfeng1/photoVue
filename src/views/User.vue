@@ -63,4 +63,7 @@ export default {
 .el-menu-vertical-demo {
   border-right: none;
 }
+a:-webkit-any-link{
+  text-decoration: none;
+}
 </style>

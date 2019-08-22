@@ -1,6 +1,6 @@
 <template>
   <div class="hideScroll fixCenter" :style="{maxWidth:maxWidth,width:width}">
-    <el-row class="showImgs">
+    <el-row class="showImgs" :style="{height:height}">
       <el-col
         style="minHeight: 10vh"
         :xs="imgWidthList[0]"
@@ -41,6 +41,10 @@ export default {
       validator(value) {
         return value.length === 5;
       }
+    },
+    height:{
+      type:String,
+      default:'500px'
     }
   },
   computed: {
@@ -76,7 +80,6 @@ export default {
 }
 
 .showImgs {
-  height: 500px;
   overflow: auto;
 }
 .el-col {
