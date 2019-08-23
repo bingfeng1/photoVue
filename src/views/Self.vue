@@ -6,9 +6,9 @@
         <span>用户注册</span>
       </div>
       <el-form :model="form" status-icon :rules="rules" ref="form" label-width="100px">
-        <el-form-item label="注册账号" prop="account">
+        <!-- <el-form-item label="注册账号" prop="account">
           <el-input v-model="form.account" disabled></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="昵称" prop="nickname">
           <el-input v-model="form.nickname"></el-input>
         </el-form-item>
@@ -74,13 +74,13 @@ const hobbyOption = ["足球", "篮球", "游戏", "其他"];
 export default {
   data() {
     // 验证条件判断
-    var checkAccount = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error("账号不能为空"));
-      } else {
-        callback();
-      }
-    };
+    // var checkAccount = (rule, value, callback) => {
+    //   if (!value) {
+    //     return callback(new Error("账号不能为空"));
+    //   } else {
+    //     callback();
+    //   }
+    // };
     var validatePass = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入密码"));
@@ -107,7 +107,7 @@ export default {
       },
       rules: {
         pass: [{ validator: validatePass, trigger: "blur" }],
-        account: [{ validator: checkAccount, trigger: "blur" }]
+        // account: [{ validator: checkAccount, trigger: "blur" }]
       },
       // 头像剪裁属性
       cropShow: false,
@@ -181,7 +181,7 @@ export default {
       }
       if (isJPG && isLt2M) {
         this.form.imageUrl = URL.createObjectURL(img);
-        this.form.portrait = new File([img], this.form.imageType);
+        this.form.portrait = new File([img], `${this.form.account}.${this.form.imageType}`);
         this.hideCrop();
       }
     },
@@ -196,6 +196,9 @@ export default {
           result.hobbies = result.hobbies.split(',')
         }else{
           result.hobbies = []
+        }
+        if(result.portrait){
+          result.imageUrl = `${this.$http.defaults.baseURL}/${result.portrait}`;
         }
         for (let o in result) {
           this.$set(this.form, o, result[o]);

@@ -94,11 +94,6 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
     }
-  },
-  // 离开这个组件时触发
-  deactivated(){
-    this.form.pass = "";
-    this.form.account = "";
   }
 };
 </script>

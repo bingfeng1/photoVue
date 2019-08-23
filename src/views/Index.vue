@@ -10,7 +10,7 @@
             <Logo></Logo>
           </template>
           <!-- 搜索功能 -->
-          <Search @search="search"></Search>
+          <!-- <Search @search="search"></Search> -->
           <!-- 登录按钮 -->
           <template #login>
             <ToLogin :isLogin="isLogin">
@@ -57,7 +57,7 @@
 // @ is an alias to /src
 import MyHeader from "@/components/index/Header.vue";
 import Logo from "@/components/common/Logo.vue";
-import Search from "@/components/index/Search.vue";
+// import Search from "@/components/index/Search.vue";
 import ToLogin from "@/components/index/ToLogin.vue";
 import Carousel from "@/components/index/Carousel.vue";
 import ImgList from "@/components/common/ImgList.vue";
@@ -73,7 +73,7 @@ export default {
   components: {
     MyHeader,
     Logo,
-    Search,
+    // Search,
     ToLogin,
     Carousel,
     ImgList,
@@ -84,9 +84,6 @@ export default {
   },
   mounted() {
     this.getCarousel();
-  },
-  // 由于使用了keep-alive，这里需要返回首页的时候，重新刷新图片墙
-  activated() {
     this.getImgList();
   },
   data() {
@@ -163,6 +160,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.el-header{
+  position: fixed;
+  width:100%;
+  z-index: 3;
+}
 .el-header,
 .el-main {
   padding: 0px;

@@ -182,7 +182,7 @@ export default {
       }
       if (isJPG && isLt2M) {
         this.form.imageUrl = URL.createObjectURL(img);
-        this.form.portrait = new File([img], this.form.imageType);
+        this.form.portrait = new File([img], `${this.form.account}.${this.form.imageType}`);
         this.hideCrop();
       }
     }

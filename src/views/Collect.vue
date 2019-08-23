@@ -38,9 +38,6 @@ export default {
       });
     }
   },
-  activated() {
-    this.getImgList();
-  },
   mounted() {
     this.getImgList();
   }
