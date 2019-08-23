@@ -20,7 +20,7 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "login" */ './views/Login.vue')
     },
     {
-      path: '/SignUp',
+      path: '/signUp',
       name: 'signup',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
@@ -28,7 +28,7 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "login" */ './views/SignUp.vue')
     },
     {
-      path: '/User',
+      path: '/user',
       name: 'user',
       meta: {
         auth: true
@@ -39,7 +39,7 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "user" */ './views/User.vue'),
       children:[
         {
-          path: 'Upload',
+          path: 'upload',
           name: 'upload',
           meta: {
             auth: true
@@ -48,10 +48,9 @@ const router = new Router({
           // this generates a separate chunk (about.[hash].js) for this route
           // which is lazy-loaded when the route is visited.
           component: () => import(/* webpackChunkName: "user" */ './views/Upload.vue')
-        }
-        ,
+        },
         {
-          path: 'Collect',
+          path: 'collect',
           name: 'collect',
           meta: {
             auth: true
@@ -60,6 +59,17 @@ const router = new Router({
           // this generates a separate chunk (about.[hash].js) for this route
           // which is lazy-loaded when the route is visited.
           component: () => import(/* webpackChunkName: "user" */ './views/Collect.vue')
+        },
+        {
+          path: 'self',
+          name: 'self',
+          meta: {
+            auth: true
+          },
+          // route level code-splitting
+          // this generates a separate chunk (about.[hash].js) for this route
+          // which is lazy-loaded when the route is visited.
+          component: () => import(/* webpackChunkName: "user" */ './views/Self.vue')
         }
       ]
     }

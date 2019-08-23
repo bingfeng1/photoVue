@@ -12,8 +12,8 @@
               style="textAlign:left"
               active-text-color="#303133"
             >
-              <router-link to="/">
-                <el-menu-item index="/index">
+              <router-link to="/user/self">
+                <el-menu-item index="self">
                   <i class="el-icon-menu"></i>
                   <span slot="title">个人中心</span>
                 </el-menu-item>

@@ -5,7 +5,7 @@
       <i class="el-icon-arrow-down el-icon--right"></i>
     </span>
     <el-dropdown-menu slot="dropdown">
-      <el-avatar :size="60" :src="userInfo.base64"></el-avatar>
+      <el-avatar :size="60" :src="portrait"></el-avatar>
       <el-dropdown-item command="self">个人中心</el-dropdown-item>
       <el-dropdown-item command="collect">收藏</el-dropdown-item>
       <el-dropdown-item command="upload">上传作品</el-dropdown-item>
@@ -32,10 +32,18 @@ map
   })
   .set("collect", function(vm) {
     vm.$router.push("/user/collect")
+  })
+  .set("self",function(vm){
+    vm.$router.push("/user/self")
   });
 export default {
   props: {
     userInfo: Object
+  },
+  computed: {
+    portrait(){
+      return `${this.$http.defaults.baseURL}/${this.userInfo.portrait}`
+    }
   },
   methods: {
     handleCommand(key) {

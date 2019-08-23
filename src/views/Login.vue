@@ -65,13 +65,8 @@ export default {
             .post("/login", this.form)
             .then(res => {
               const result = res.data;
-              if (result.imageBase64) {
-                let userInfo = {
-                  token: result.token,
-                  base64: result.imageBase64,
-                  type: result.imageType,
-                  nickname: result.nickname
-                };
+              if (result) {
+                let userInfo = result;
                 window.sessionStorage.setItem(
                   "userInfo",
                   JSON.stringify(userInfo)

@@ -7,7 +7,7 @@
       </div>
       <el-form :model="form" status-icon :rules="rules" ref="form" label-width="100px">
         <el-form-item label="注册账号" prop="account">
-          <el-input v-model="form.account"></el-input>
+          <el-input v-model="form.account" disabled></el-input>
         </el-form-item>
         <el-form-item label="昵称" prop="nickname">
           <el-input v-model="form.nickname"></el-input>
@@ -120,14 +120,13 @@ export default {
         if (valid) {
           let formData = new FormData();
           formData.append("pass", this.form.pass);
-          formData.append("account", this.form.account);
           formData.append("nickname", this.form.nickname);
           formData.append("sex", this.form.sex);
           formData.append("hobbies", this.form.hobbies);
           formData.append("birthday", this.form.birthday);
           formData.append("portrait", this.form.portrait);
-          this.$http
-            .post("/signup", formData, {
+          this.$http_token
+            .post("/user/changeUserInfo", formData, {
               headers: {
                 "Content-Type": "multipart/form-data"
               }
@@ -135,11 +134,11 @@ export default {
             .then(res => {
               const result = res.data;
               if (result.message) {
-                this.$message.error("注册失败" + result.message);
+                this.$message.error("修改失败" + result.message);
               } else {
                 // 如果注册成功，跳转至登录页面进行登录
                 this.$message({
-                  message: "注册成功，请登录",
+                  message: "修改成功，请重新登录",
                   type: "success"
                 });
                 this.$router.replace("/login");
@@ -156,7 +155,7 @@ export default {
     },
     handleCrop(file) {
       this.inputImgUrl = URL.createObjectURL(file.raw);
-      this.form.imageType = file.name.split('.')[1];
+      this.form.imageType = file.name.split(".")[1];
       this.showCrop();
     },
     // 显示裁剪页
@@ -185,7 +184,27 @@ export default {
         this.form.portrait = new File([img], this.form.imageType);
         this.hideCrop();
       }
+    },
+    // 获取所有用户信息
+    getUserInfo() {
+      this.$http_token.get("/user/userInfo").then(res => {
+        let result = res.data;
+        if(result.birthday == "0000-00-00"){
+          result.birthday = ""
+        }
+        if(result.hobbies){
+          result.hobbies = result.hobbies.split(',')
+        }else{
+          result.hobbies = []
+        }
+        for (let o in result) {
+          this.$set(this.form, o, result[o]);
+        }
+      });
     }
+  },
+  mounted() {
+    this.getUserInfo();
   }
 };
 </script>

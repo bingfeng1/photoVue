@@ -134,12 +134,12 @@ export default {
       let userInfo = getUserInfo();
       // 如果有用户信息
       if (userInfo) {
-        let { nickname, base64, type } = userInfo;
+        let { nickname, portrait } = userInfo;
         this.$set(this.userInfo, "nickname", nickname);
         this.$set(
           this.userInfo,
-          "base64",
-          "data:" + type + ";base64," + base64
+          "portrait",
+          portrait
         );
       }
       return !!this.$store.state.userInfo.token;
