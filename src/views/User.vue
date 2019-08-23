@@ -7,7 +7,11 @@
             <Logo></Logo>
           </router-link>
           <el-card>
-            <el-menu class="el-menu-vertical-demo" style="textAlign:left">
+            <el-menu
+              class="el-menu-vertical-demo"
+              style="textAlign:left"
+              active-text-color="#303133"
+            >
               <router-link to="/">
                 <el-menu-item index="/index">
                   <i class="el-icon-menu"></i>
@@ -59,11 +63,17 @@ export default {
       border-bottom: 1px solid rgba(131, 131, 131, 0.418);
     }
   }
+  // 覆盖elementui的样式
+  .router-link-active.router-link-exact-active {
+    li.el-menu-item {
+      color: #409eff !important;
+    }
+  }
 }
 .el-menu-vertical-demo {
   border-right: none;
 }
-a:-webkit-any-link{
+a:-webkit-any-link {
   text-decoration: none;
 }
 </style>

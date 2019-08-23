@@ -1,44 +1,37 @@
 <template>
-  <a :download="name" :href="url" hidden id="download"></a>
+  <el-tooltip class="item" effect="light" content="下载" placement="bottom">
+    <i class="el-icon-download" @click="download"></i>
+  </el-tooltip>
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      url: "",
-      name: ""
-    };
+  props:{
+    img:Object
   },
   methods: {
-    // 下载
-    download(img) {
-      this.name = img.originalname;
+    download() {
       this.$http
         .get("/image/downloads", {
-          params: img,
-          responseType: "arraybuffer"
+          params: this.img,
+          responseType: "blob"
         })
         .then(res => {
-          //将从后台获取的图片流进行转换
-          return (
-            "data:image/png;base64," +
-            btoa(
-              new Uint8Array(res.data).reduce(
-                (data, byte) => data + String.fromCharCode(byte),
-                ""
-              )
-            )
+          let data = res.data;
+          // 直接使用Blob就行了
+          let url = window.URL.createObjectURL(new Blob([data]));
+          let link = document.createElement("a");
+          link.style.display = "none";
+          link.href = url;
+          link.setAttribute(
+            "download",
+            `${this.img.originalname}.${this.img.ext}`
           );
-        })
-        .then(data => {
-          //接收转换后的Base64图片
-          this.url = data;
-          this.$nextTick(() => {
-            document.getElementById("download").click();
-          });
-        })
-        .catch({});
+
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        });
     }
   }
 };

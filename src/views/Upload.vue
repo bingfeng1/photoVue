@@ -22,11 +22,32 @@
         <!-- 个人的图片列表 -->
         <ImgList :imgListResult="imgListResult" v-loading="loading">
           <template #bottom="{img}">
-            <ImgBotton :img="img" @delete="deletePic"></ImgBotton>
+            <ImgBotton :img="img">
+              <div>{{img.originalname}}</div>
+              <el-tooltip class="item" effect="light" content="重命名" placement="bottom">
+                <i class="el-icon-edit" @click="showDialog(img)"></i>
+              </el-tooltip>
+
+              <el-tooltip class="item" effect="light" content="删除图片" placement="bottom">
+                <i class="el-icon-delete" @click="deletePic(img)"></i>
+              </el-tooltip>
+              <Download :img="img"></Download>
+            </ImgBotton>
           </template>
         </ImgList>
       </el-main>
     </el-container>
+    <el-dialog :visible.sync="showUpdate">
+      <el-form ref="form" :model="form" label-width="80px">
+        <el-form-item label="重命名">
+          <el-input v-model="form.originalname"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showUpdate = false">取 消</el-button>
+        <el-button type="primary" @click="rename">确 定</el-button>
+      </span>
+    </el-dialog>
   </el-container>
 </template>
 
@@ -36,7 +57,8 @@ import Tree from "@/components/upload/Tree.vue";
 import Statistics from "@/components/upload/Statistics.vue";
 import ToUpload from "@/components/upload/ToUpload.vue";
 import ImgList from "@/components/common/ImgList.vue";
-import ImgBotton from "@/components/upload/ImgBotton.vue";
+import ImgBotton from "@/components/common/ImgBotton.vue";
+import Download from "@/components/common/Download.vue";
 
 export default {
   components: {
@@ -44,7 +66,8 @@ export default {
     Statistics,
     ToUpload,
     ImgList,
-    ImgBotton
+    ImgBotton,
+    Download
   },
 
   data() {
@@ -65,7 +88,13 @@ export default {
         children: "children",
         label: "label"
       },
-      checkTreeNode: []
+      checkTreeNode: [],
+      showUpdate: false,
+      form: {
+        id: "",
+        originalname: ""
+      },
+      renameImg: {}
     };
   },
 
@@ -113,9 +142,37 @@ export default {
           this.loading = false;
         });
     },
-    deletePic(id) {
-      this.imgListResult = this.imgListResult.filter(v => {
-        return v.id !== id;
+    deletePic(img) {
+      this.$http_token
+        .delete("/user/deleteImg", {
+          params: img
+        })
+        .then(res => {
+          let result = res.data;
+          if (result == "success") {
+            this.imgListResult = this.imgListResult.filter(v => {
+              return v.id !== img.id;
+            });
+          }
+        });
+    },
+    showDialog(img) {
+      this.showUpdate = true;
+      this.form.originalname = img.originalname;
+      this.form.id = img.id;
+      this.renameImg = img;
+    },
+    rename() {
+      // 这里操作修改部分
+      this.$http_token.put("/user/updateImgName", this.form).then(res => {
+        // 这里需要写入成功或者失败
+        let result = res.data;
+        if (result.affectedRows == 1) {
+          this.renameImg.originalname = this.form.originalname;
+          this.showUpdate = false;
+        } else {
+          alert("修改失败或者修改数量过多");
+        }
       });
     }
   },

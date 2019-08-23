@@ -31,10 +31,19 @@
         <el-row>
           <el-col :span="24" class="flexcenter">
             <!-- 这里的span长度应该改为自适应的 -->
-            <ImgList :imgListResult="imgListResult" minWidth="900px" width="90vw" :imgWidthList="[8,8,6,4,4]">
+            <ImgList
+              :imgListResult="imgListResult"
+              minWidth="900px"
+              width="90vw"
+              :imgWidthList="[8,8,6,4,4]"
+            >
               <!-- 这里设置收藏 -->
               <template #bottom="{img}">
-                <ImgBotton :img="img"></ImgBotton>
+                <ImgBotton :img="img">
+                  <div>{{img.originalname}}</div>
+                  <Collect :img="img"></Collect>
+                  <Download :img="img"></Download>
+                </ImgBotton>
               </template>
             </ImgList>
           </el-col>
@@ -53,7 +62,9 @@ import ToLogin from "@/components/index/ToLogin.vue";
 import Carousel from "@/components/index/Carousel.vue";
 import ImgList from "@/components/common/ImgList.vue";
 import User from "@/components/index/User.vue";
-import ImgBotton from "@/components/index/ImgBotton.vue";
+import ImgBotton from "@/components/common/ImgBotton.vue";
+import Download from "@/components/common/Download.vue";
+import Collect from "@/components/common/Collect.vue";
 
 import { getUserInfo } from "@/assets/js/common.js";
 
@@ -67,7 +78,9 @@ export default {
     Carousel,
     ImgList,
     User,
-    ImgBotton
+    ImgBotton,
+    Download,
+    Collect
   },
   mounted() {
     this.getCarousel();
